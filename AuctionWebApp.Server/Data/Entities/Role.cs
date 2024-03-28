@@ -1,14 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace AuctionWebApp.Server.Data.Entities
+namespace AuctionWebApp.Server.Data.Entities;
+
+public partial class Role
 {
-    [Table("role")]
-    public class Role
-    {
-        [Column("r_id")]
-        public int Id { get; set; }
+    public byte RId { get; set; }
 
-        [Column("r_name")]
-        public required string Name { get; set; }
-    }
+    public string RName { get; set; } = null!;
+
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

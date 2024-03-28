@@ -1,14 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace AuctionWebApp.Server.Data.Entities
+namespace AuctionWebApp.Server.Data.Entities;
+
+public partial class Country
 {
-    [Table("country")]
-    public class Country
-    {
-        [Column("cou_id")]
-        public int Id { get; set; }
+    public ushort CouId { get; set; }
 
-        [Column("cou_name")]
-        public required string Name { get; set; }
-    }
+    public string CouName { get; set; } = null!;
+
+    public virtual ICollection<CountryDelivery> CountryDeliveries { get; set; } = [];
+
+    public virtual ICollection<User> Users { get; set; } = [];
 }

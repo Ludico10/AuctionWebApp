@@ -3,7 +3,7 @@ using AuctionWebApp.Server.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<MySQLContext>();
+builder.Services.AddDbContext<MySqlContext>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -20,10 +20,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
-    using (MySQLContext db = new MySQLContext())
-    {
-    }
 }
 
 app.UseHttpsRedirection();
