@@ -1,9 +1,12 @@
 using AuctionWebApp.Server.Data;
+using AuctionWebApp.Server.Interfaces;
+using AuctionWebApp.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<MySqlContext>();
+builder.Services.AddScoped<IAuctionService, AuctionService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

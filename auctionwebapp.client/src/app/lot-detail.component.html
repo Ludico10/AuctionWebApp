@@ -1,0 +1,11 @@
+<div class="form-group">
+  <label>Идентификатор пользователя</label>
+  <input type="number" [(ngModel)]="bid.BParticipantId" class="form-control" />
+</div>
+<div class="form-group">
+  <label>Ставка</label>
+  <input type="number" [(ngModel)]="bid.BSize" class="form-control" />
+</div>
+<div>
+  <input type="button" value="Сохранить" (click)="save()" class="btn btn-success" />
+</div>

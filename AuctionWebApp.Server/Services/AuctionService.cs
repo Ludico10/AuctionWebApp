@@ -8,6 +8,16 @@ namespace AuctionWebApp.Server.Services
 {
     public class AuctionService(MySqlContext context) : IAuctionService
     {
+        public async Task PlaceLot()
+        {
+            await context.Lots.AddAsync(
+                new Lot()
+                {
+                    
+                });
+            await context.SaveChangesAsync();
+        }
+
         public async Task PlaceBid(ulong lotId, ulong userId, ulong amount, ulong? maxAmount)
         {
             var user = await context.Users.SingleOrDefaultAsync(u => u.UId == userId);
@@ -23,8 +33,8 @@ namespace AuctionWebApp.Server.Services
                 return;
             }
 
-            var lastBid = await FindLastLotBid(lotId);
             IAuctionActions auction = AuctionFactory.GetAuction(lot.LAuctionType);
+            var lastBid = await FindLastLotBid(lotId);
             if (auction.BidCheck(lot, amount, time, lastBid))
             {
                 Bid? bid = new()
@@ -45,7 +55,7 @@ namespace AuctionWebApp.Server.Services
                     prevBid = autoBid;
                     autoBid = await auction.AutomaticBid(lot, prevBid, null, context);
                 }
-                if (prevBid != null)
+                if (prevBid != null && auction.BidCheck(lot, prevBid.BSize, prevBid.BTime, await FindLastLotBid(lotId)))
                 {
                     await context.Bids.AddAsync(prevBid);
                     //отправить сообщение о ставке
