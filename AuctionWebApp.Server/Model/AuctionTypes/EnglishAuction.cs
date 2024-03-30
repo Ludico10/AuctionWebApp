@@ -10,8 +10,12 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
     {
         public bool BidCheck(Lot lot, ulong amount, DateTime time, Bid? lastBid)
         {
-            var lastAmount = (lastBid == null) ? lot.LInitialCost : lastBid.BSize;
-            return amount >= lastAmount + lot.LCostStep;
+            if (lastBid == null)
+            {
+                return amount >= lot.LInitialCost;
+            }
+
+            return amount >= lastBid.BSize + lot.LCostStep;
         }
 
         public async Task<Bid?> AutomaticBid(Lot lot, Bid? lastBid, ulong? maxBid, MySqlContext context)
@@ -26,7 +30,7 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
                 .OrderByDescending(tl => tl.TlMaxAutomaticBid)
                 .ToListAsync();
 
-            if (lotAutomatic == null || lotAutomatic[0] == null)
+            if (lotAutomatic == null || lotAutomatic.Count == 0)
             {
                 return null;
             }

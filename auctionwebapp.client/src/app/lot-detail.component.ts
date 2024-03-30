@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { DataService } from './data.service';
-import { Bid } from './bid'
+import { BidRequest } from './bidRequest'
 
 @Component({
   templateUrl: './lot-detail.component.html',
@@ -11,16 +11,15 @@ import { Bid } from './bid'
 
 export class LotDetailComponent implements OnInit {
 
-  bid: Bid = new Bid();
+  bid: BidRequest = new BidRequest();
 
-  constructor(private dataService: DataService, activeRoute: ActivatedRoute) {
-    this.bid.BLotId = Number.parseInt(activeRoute.snapshot.params["id"]);
+  constructor(private dataService: DataService, private router: Router, activeRoute: ActivatedRoute) {
+    this.bid.LotId = Number.parseInt(activeRoute.snapshot.params["id"]);
   }
 
   ngOnInit() { }
 
   save() {
-    this.bid.BLotId = 2;
-    this.dataService.placeBid(2, this.bid);
+    this.dataService.placeBid(2, this.bid).subscribe(() => this.router.navigateByUrl("/"));
   }
 }

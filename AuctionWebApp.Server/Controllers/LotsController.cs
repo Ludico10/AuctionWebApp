@@ -1,20 +1,19 @@
-﻿using AuctionWebApp.Server.Data;
-using AuctionWebApp.Server.Data.Entities;
+﻿using AuctionWebApp.Server.Data.Entities;
 using AuctionWebApp.Server.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionWebApp.Server.Controllers
 {
     [ApiController]
-    [Route("/bid")]
+    [Route("[controller]")]
     public class LotsController(IAuctionService auctionService) : Controller
     {
         [HttpPost("{lotId}")]
-        public async Task<IActionResult> PostAsync(ulong lotId , Bid newBid)
+        public async Task<IActionResult> PostAsync(int lotId, BidRequest newBid)
         {
             if (ModelState.IsValid)
             {
-                await auctionService.PlaceBid(lotId, newBid.BParticipantId, newBid.BSize, null);
+                await auctionService.PlaceBid(newBid.LotId, newBid.UserId, newBid.Size, null);
                 return Ok(newBid);
             }
             return BadRequest(ModelState);

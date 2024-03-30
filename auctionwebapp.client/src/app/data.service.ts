@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Bid } from './bid'
+import { BidRequest } from './bidRequest'
 
 @Injectable()
 export class DataService {
 
-  private url = "/bid";
+  private url = "http://localhost:4200/Lots/2";
 
   constructor(private http: HttpClient) { }
 
-  placeBid(lotId : number, bid : Bid) {
-    return this.http.post(this.url + '/' + lotId, bid);
+  placeBid(lotId : number, bid : BidRequest) {
+    return this.http.post(this.url, bid);
   }
 }
