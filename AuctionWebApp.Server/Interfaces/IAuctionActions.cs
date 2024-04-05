@@ -5,7 +5,8 @@ namespace AuctionWebApp.Server.Interfaces
 {
     public interface IAuctionActions
     {
-        public bool BidCheck(Lot lot, ulong amount, DateTime time, Bid? lastBid);
+        public Task<bool> BidCheck(Lot lot, ulong amount, DateTime time, MySqlContext context);
         public Task<Bid?> AutomaticBid(Lot lot, Bid? lastBid, ulong? maxBid, MySqlContext context);
+        public Task<ulong> GetActualCost(Lot lot, MySqlContext context);
     }
 }

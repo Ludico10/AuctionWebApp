@@ -14,7 +14,7 @@ export class LotDetailComponent implements OnInit {
   bid: BidRequest = new BidRequest();
 
   constructor(private dataService: DataService, private router: Router, activeRoute: ActivatedRoute) {
-    this.bid.LotId = Number.parseInt(activeRoute.snapshot.params["id"]);
+    this.bid.lotId = Number.parseInt(activeRoute.snapshot.params["id"]);
   }
 
   ngOnInit() { }

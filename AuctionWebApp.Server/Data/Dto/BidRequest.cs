@@ -1,4 +1,4 @@
-﻿namespace AuctionWebApp.Server.Data.Entities
+﻿namespace AuctionWebApp.Server.Data.Dto
 {
     public class BidRequest
     {

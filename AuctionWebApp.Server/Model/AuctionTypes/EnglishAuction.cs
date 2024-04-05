@@ -8,14 +8,29 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
 {
     public class EnglishAuction : IAuctionActions
     {
-        public bool BidCheck(Lot lot, ulong amount, DateTime time, Bid? lastBid)
+        private async Task<Bid?> GetLastBid(ulong lotId, MySqlContext context)
         {
+            return await context.Bids
+                            .Where(b => b.BLotId == lotId)
+                            .OrderByDescending(b => b.BSize)
+                            .FirstOrDefaultAsync();
+        }
+
+        public async Task<ulong> GetActualCost(Lot lot, MySqlContext context)
+        {
+            var lastBid = await GetLastBid(lot.LId, context);
             if (lastBid == null)
             {
-                return amount >= lot.LInitialCost;
+                return lot.LInitialCost;
             }
 
-            return amount >= lastBid.BSize + lot.LCostStep;
+            return lastBid.BSize + lot.LCostStep;
+        }
+
+        public async Task<bool> BidCheck(Lot lot, ulong amount, DateTime time, MySqlContext context)
+        {
+            var actualCost = await GetActualCost(lot, context);
+            return amount >= actualCost;
         }
 
         public async Task<Bid?> AutomaticBid(Lot lot, Bid? lastBid, ulong? maxBid, MySqlContext context)

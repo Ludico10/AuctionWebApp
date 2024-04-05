@@ -6,11 +6,11 @@ import { BidRequest } from './bidRequest'
 @Injectable()
 export class DataService {
 
-  private url = "http://localhost:4200/Lots/2";
+  private url = "https://localhost:7183/lots";
 
   constructor(private http: HttpClient) { }
 
-  placeBid(lotId : number, bid : BidRequest) {
+  placeBid(lotId: number, bid: BidRequest) {
     return this.http.post(this.url, bid);
   }
 }

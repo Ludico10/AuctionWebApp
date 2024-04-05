@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AuctionWebApp.Server.Data.Dto;
 
 namespace AuctionWebApp.Server.Data.Entities;
 
@@ -14,4 +13,11 @@ public partial class CountryDelivery
     public virtual Country CdCountry { get; set; } = null!;
 
     public virtual Lot CdLot { get; set; } = null!;
+
+    public CountryDelivery(ulong lotId, DeliveryInfo deliveryInfo)
+    {
+        CdLotId = lotId;
+        CdCountryId = deliveryInfo.CountryId;
+        CdSize = deliveryInfo.Size;
+    }
 }

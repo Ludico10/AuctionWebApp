@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AuctionWebApp.Server.Data.Dto;
 
 namespace AuctionWebApp.Server.Data.Entities;
 
@@ -44,4 +43,25 @@ public partial class Lot
     public virtual ICollection<LotCategory> LotCategories { get; set; } = [];
 
     public virtual ICollection<TrackableLot> TrackableLots { get; set; } = [];
+
+    public void FromLotInfo(LotInfo lotInfo, ItemCondition condition)
+    {
+        LName = lotInfo.Name;
+        LDescription = lotInfo.Description;
+        LFinishTime = lotInfo.FinishTime;
+        LConditionId = lotInfo.ConditionId;
+        LCondition = condition;
+        LInitialCost = lotInfo.InitialCost;
+        LCostStep = lotInfo.CostStep;
+    }
+
+    public Lot(LotInfo lotInfo, User user, AuctionType auctionType, ItemCondition condition)
+    {
+        FromLotInfo(lotInfo, condition);
+        LStartTime = DateTime.Now;
+        LSellerId = user.UId;
+        LSeller = user;
+        LAuctionType = auctionType.AtId;
+        LAuctionTypeNavigation = auctionType;
+    }
 }

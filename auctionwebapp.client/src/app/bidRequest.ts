@@ -1,8 +1,8 @@
 export class BidRequest {
   constructor(
-    public Time?: Date,
-    public UserId?: number,
-    public Size?: number,
-    public LotId?: number,
+    public time?: Date,
+    public userId?: number,
+    public size?: number,
+    public lotId?: number,
   ) { }
 }

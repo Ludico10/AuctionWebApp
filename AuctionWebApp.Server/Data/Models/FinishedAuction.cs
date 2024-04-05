@@ -42,4 +42,21 @@ public partial class FinishedAuction
     public virtual User FaSeller { get; set; } = null!;
 
     public virtual User FaWinner { get; set; } = null!;
+
+    public FinishedAuction(Lot lot, ulong winnerId, ulong cost)
+    {
+        FaName = lot.LName;
+        FaFinishTime = lot.LFinishTime;
+        FaSellerId = lot.LSellerId;
+        FaWinnerId = winnerId;
+        FaAuctionType = lot.LAuctionType;
+        FaSize = cost;
+        FaConditionId = lot.LConditionId;
+        FaCurrentStateId = 1;
+        FaStateUpdateTime = DateTime.Now;
+        FaDescription = lot.LDescription;
+        FaAuctionTypeNavigation = lot.LAuctionTypeNavigation;
+        FaCondition = lot.LCondition;
+        FaSeller = lot.LSeller;
+    }
 }
