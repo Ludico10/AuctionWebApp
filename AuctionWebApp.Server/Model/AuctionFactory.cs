@@ -7,7 +7,13 @@ namespace AuctionWebApp.Server.Model
     {
         public static IAuctionActions GetAuction(byte typeId)
         {
-            return new EnglishAuction();
+            switch (typeId)
+            {
+                case 2: return new DutchAuction();
+                case 3: return new HiddenAuction();
+                case 4: return new HiddenSecondPriceAuction();
+                default: return new EnglishAuction();
+            }
         }
     }
 }

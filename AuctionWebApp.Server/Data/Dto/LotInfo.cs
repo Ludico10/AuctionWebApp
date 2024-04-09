@@ -6,18 +6,21 @@ namespace AuctionWebApp.Server.Data.Dto
     {
         public ulong? Id { get; set; }
         public string Name { get; set; } = null!;
-        public string Description { get; set; } = null!;
+        public string Description { get; set; } = "";
         public ulong SellerId { get; set; }
         public DateTime FinishTime { get; set; }
         public byte AuctionTypeId { get; set; }
-        public string AuctionTypeName { get; set; }
+        public string AuctionTypeName { get; set; } = "";
         public byte ConditionId { get; set; }
-        public string ConditionName { get; set; }
+        public string ConditionName { get; set; } = "";
         public ulong InitialCost { get; set; }
         public ulong CostStep { get; set; }
 
-        public Dictionary<string, string?> Parameters { get; set; }
-        public IEnumerable<DeliveryInfo> DeliveryInfos { get; set; }
+        public Dictionary<string, string?> Parameters { get; set; } = [];
+        public IEnumerable<DeliveryInfo> DeliveryInfos { get; set; } = [];
+        public IEnumerable<CategoryInfo> CategoryInfos { get; set; } = [];
+
+        public LotInfo() { }
 
         public LotInfo(Lot lot)
         {
@@ -33,12 +36,19 @@ namespace AuctionWebApp.Server.Data.Dto
             InitialCost = lot.LInitialCost;
             CostStep = lot.LCostStep;
             Parameters = lot.LotAdditionalParameters.ToDictionary(lap => lap.LapName, lap => lap.LapValue);
-            var infos = new List<DeliveryInfo>();
+            var delInfos = new List<DeliveryInfo>();
             foreach (var info  in lot.CountryDeliveries)
             {
-                infos.Add(new DeliveryInfo(info));
+                delInfos.Add(new DeliveryInfo(info));
             }
-            DeliveryInfos = infos;
+            DeliveryInfos = delInfos;
+
+            var catInfos = new List<CategoryInfo>();
+            foreach (var info in lot.LotCategories)
+            {
+                catInfos.Add(new CategoryInfo(info));
+            }
+            CategoryInfos = catInfos;
         }
     }
 }

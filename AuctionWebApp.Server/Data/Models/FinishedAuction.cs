@@ -43,6 +43,8 @@ public partial class FinishedAuction
 
     public virtual User FaWinner { get; set; } = null!;
 
+    public FinishedAuction() { }
+
     public FinishedAuction(Lot lot, ulong winnerId, ulong cost)
     {
         FaName = lot.LName;

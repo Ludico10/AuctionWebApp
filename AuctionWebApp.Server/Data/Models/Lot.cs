@@ -64,4 +64,6 @@ public partial class Lot
         LAuctionType = auctionType.AtId;
         LAuctionTypeNavigation = auctionType;
     }
+
+    public Lot() { }
 }

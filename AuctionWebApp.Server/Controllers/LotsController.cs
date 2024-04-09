@@ -10,12 +10,12 @@ namespace AuctionWebApp.Server.Controllers
     {
         private readonly int itemsOnPage = 10;
 
-        [HttpPost]
+        [HttpPost("{lotId}")]
         public async Task<IActionResult> PostAsync([FromBody] BidRequest newBid)
         {
             if (ModelState.IsValid)
             {
-                await auctionService.PlaceBid(newBid.LotId, newBid.UserId, newBid.Size, null);
+                await auctionService.PlaceBid(newBid.LotId, newBid.UserId, newBid.Size, DateTime.Now, newBid.MaxSize);
                 return Ok(newBid);
             }
 
@@ -26,7 +26,7 @@ namespace AuctionWebApp.Server.Controllers
         public async Task<IEnumerable<LotShortInfo>> GetAsync(int pageNumber, ushort category)
         {
             var result = new List<LotShortInfo>();
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && pageNumber > 0)
             {
                 var lotsList = await auctionService.GetLotsPage(pageNumber, itemsOnPage, category);
                 foreach ( var lot in lotsList )
@@ -62,7 +62,7 @@ namespace AuctionWebApp.Server.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpPut]
+        [HttpPut("{lotId}")]
         public async Task<IActionResult> PutAsync(LotInfo lotInfo)
         {
             if (ModelState.IsValid)
@@ -74,7 +74,7 @@ namespace AuctionWebApp.Server.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpDelete]
+        [HttpDelete("{lotId}")]
         public async Task<IActionResult> DeleteAsync(LotInfo lotInfo)
         {
             if (ModelState.IsValid && lotInfo.Id != null)

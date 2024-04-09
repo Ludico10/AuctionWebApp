@@ -14,6 +14,8 @@ public partial class CountryDelivery
 
     public virtual Lot CdLot { get; set; } = null!;
 
+    public CountryDelivery() { }
+
     public CountryDelivery(ulong lotId, DeliveryInfo deliveryInfo)
     {
         CdLotId = lotId;

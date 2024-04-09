@@ -9,24 +9,24 @@ namespace AuctionWebApp.Server.Services
 {
     public class AuctionService(MySqlContext context) : IAuctionService
     {
-        public async Task PlaceLot(LotInfo lotInfo)
+        public async Task<Lot?> PlaceLot(LotInfo lotInfo)
         {
             var user = await context.Users.SingleOrDefaultAsync(u => u.UId == lotInfo.SellerId);
             var condition = await context.ItemConditions.SingleOrDefaultAsync(ic => ic.IcId == lotInfo.ConditionId);
             var type = await context.AuctionTypes.SingleOrDefaultAsync(at => at.AtId == lotInfo.AuctionTypeId);
-            if (user == null || condition == null || type == null) 
+            if (user == null || condition == null || type == null)
             {
-                return;
+                return null;
             }
 
             Lot? lot = new(lotInfo, user, type, condition);
             await context.AddAsync(lot);
             await context.SaveChangesAsync();
             lot = context.Lots.SingleOrDefault(l => l.LName == lotInfo.Name
-                                                 && l.LSellerId == lotInfo.SellerId);  
+                                                 && l.LSellerId == lotInfo.SellerId);
             if (lot == null)
             {
-                return;
+                return lot;
             }
 
             foreach (var param in lotInfo.Parameters)
@@ -48,7 +48,84 @@ namespace AuctionWebApp.Server.Services
                 await context.CountryDeliveries.AddAsync(new CountryDelivery(lot.LId, delivery));
             }
 
+            foreach (var category in lotInfo.CategoryInfos)
+            {
+                await context.LotCategories.AddAsync(new LotCategory(lot.LId, category));
+            }
+
             await context.SaveChangesAsync();
+            return lot;
+        }
+
+        private async Task ChangeDeliveries(ulong lotId, LotInfo lotInfo)
+        {
+            var deliveries = await context.CountryDeliveries
+                                          .Where(cd => cd.CdLotId == lotId)
+                                          .ToListAsync();
+            if (deliveries == null)
+            {
+                return;
+            }
+
+            int i = 0;
+            var deliveryList = new List<DeliveryInfo>(lotInfo.DeliveryInfos);
+            while (deliveries.Count > i)
+            {
+                var info = deliveryList.SingleOrDefault(di => di.CountryId == deliveries[i].CdCountryId);
+                if (info != null)
+                {
+                    deliveries[i].CdSize = info.Size;
+                    context.CountryDeliveries.Update(deliveries[i]);
+                    deliveryList.Remove(info);
+                    i++;
+                }
+                else
+                {
+                    context.CountryDeliveries.Remove(deliveries[i]);
+                    deliveries.RemoveAt(i);
+                }
+            }
+
+            foreach (var delivery in deliveryList)
+            {
+                await context.CountryDeliveries.AddAsync(new CountryDelivery(lotId, delivery));
+            }
+        }
+
+        private async Task ChangeCategories(ulong lotId, LotInfo lotInfo)
+        {
+            var categories = await context.LotCategories
+                                        .Where(lc => lc.LcLotId == lotId)
+                                        .ToListAsync();
+            if (categories == null)
+            {
+                return;
+            }
+
+            int i = 0;
+            var categoriesList = new List<CategoryInfo>(lotInfo.CategoryInfos);
+            while (categories.Count > i)
+            {
+                var info = categoriesList.SingleOrDefault(ci => ci.CategoryId == categories[i].LcCategoryId);
+                if (info != null)
+                {
+                    categories[i].LcPremiumStart = info.PremiumStart;
+                    categories[i].LcPremiumEnd = info.PremiumEnd;
+                    context.LotCategories.Update(categories[i]);
+                    categoriesList.Remove(info);
+                    i++;
+                }
+                else
+                {
+                    context.LotCategories.Remove(categories[i]);
+                    categories.RemoveAt(i);
+                }
+            }
+
+            foreach (var category in categoriesList)
+            {
+                await context.LotCategories.AddAsync(new LotCategory(lotId, category));
+            }
         }
 
         public async Task ChangeLot(LotInfo lotInfo)
@@ -79,38 +156,8 @@ namespace AuctionWebApp.Server.Services
                 }
             }
 
-            var deliveries = await context.CountryDeliveries
-                                          .Where(cd => cd.CdLotId == lot.LId)
-                                          .ToListAsync();
-            if (deliveries == null)
-            {
-                return;
-            }
-
-            int i = 0;
-            var deliveryList = new List<DeliveryInfo>(lotInfo.DeliveryInfos);
-            while (deliveries.Count > i)
-            {
-                var info = deliveryList.SingleOrDefault(di => di.CountryId == deliveries[i].CdCountryId);
-                if (info != null)
-                {
-                    deliveries[i].CdSize = info.Size;
-                    context.CountryDeliveries.Update(deliveries[i]);
-                    deliveryList.Remove(info);
-                    i++;
-                }
-                else
-                {
-                    context.CountryDeliveries.Remove(deliveries[i]);
-                    deliveries.RemoveAt(i);
-                }
-            }
-
-            foreach(var delivery in deliveryList)
-            {
-                await context.CountryDeliveries.AddAsync(new CountryDelivery(lot.LId, delivery));
-            }
-
+            await ChangeDeliveries(lot.LId, lotInfo);
+            await ChangeCategories(lot.LId, lotInfo);
             await context.SaveChangesAsync();
         }
 
@@ -130,19 +177,18 @@ namespace AuctionWebApp.Server.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task PlaceBid(ulong lotId, ulong userId, ulong amount, ulong? maxAmount)
+        public async Task<bool> PlaceBid(ulong lotId, ulong userId, ulong amount, DateTime time, ulong? maxAmount = null)
         {
             var user = await context.Users.SingleOrDefaultAsync(u => u.UId == userId);
             if (user == null)
             {
-                return;
+                return false;
             }
 
             var lot = await context.Lots.SingleOrDefaultAsync(l => l.LId == lotId);
-            DateTime time = DateTime.Now;
             if (lot == null || time < lot.LStartTime || time > lot.LFinishTime || lot.LSellerId == userId)
             {
-                return;
+                return false;
             }
 
             IAuctionActions auction = AuctionFactory.GetAuction(lot.LAuctionType);
@@ -159,12 +205,12 @@ namespace AuctionWebApp.Server.Services
                 //отправить сообщение о ставке
 
                 //есть шанс неправильной работы при почти одновременном добавлении автоматических ставок, но уже голова болит об этом думать
-                var autoBid = await auction.AutomaticBid(lot, bid, maxAmount, context);
+                var autoBid = await auction.AutomaticBid(lot, bid, context, maxAmount);
                 Bid? prevBid = null;
                 while (autoBid != null)
                 {
                     prevBid = autoBid;
-                    autoBid = await auction.AutomaticBid(lot, prevBid, null, context);
+                    autoBid = await auction.AutomaticBid(lot, prevBid, context);
                 }
                 if (prevBid != null && await auction.BidCheck(lot, prevBid.BSize, prevBid.BTime, context))
                 {
@@ -173,6 +219,43 @@ namespace AuctionWebApp.Server.Services
                 }
 
                 await context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task AuctionsClosing()
+        {
+            var finnishedAuctions = await context.Lots
+                                                .Where(l => l.LFinishTime <= DateTime.Now)
+                                                .ToListAsync();
+            if (finnishedAuctions == null)
+            {
+                return;
+            }
+
+            foreach (var auction in finnishedAuctions)
+            {
+                await CloseAuction(auction);
+                //уведомления о завершении
+                context.Lots.Remove(auction);
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task CloseAuction(Lot auction)
+        {
+            IAuctionActions actions = AuctionFactory.GetAuction(auction.LAuctionType);
+            var winnerBid = await actions.GetActualBid(auction, context);
+            if (winnerBid == null)
+            {
+                await context.FinishedAuctions.AddAsync(new FinishedAuction(auction, auction.LSellerId, auction.LInitialCost));
+            }
+            else
+            {
+                await context.FinishedAuctions.AddAsync(new FinishedAuction(auction, winnerBid.BParticipantId, winnerBid.BSize));
             }
         }
 
@@ -205,7 +288,7 @@ namespace AuctionWebApp.Server.Services
             var usualLots = await context.Lots
                                     .Where(l => l.LotCategories.Any(lc => lc.LcCategoryId == category)
                                                 && l.LFinishTime >= time
-                                                && lots.Contains(l))
+                                                && !lots.Contains(l))
                                     .OrderBy(l => l.LFinishTime)
                                     .Skip((pageNumber - 1) * lotsOnPage)
                                     .Take(lotsOnPage - lots.Count)
@@ -220,7 +303,7 @@ namespace AuctionWebApp.Server.Services
 
         public async Task<LotInfo?> GetLotInfo(ulong lotId)
         {
-            var lot = await context.Lots.FirstOrDefaultAsync(l => l.LId == lotId);
+            var lot = await context.Lots.SingleOrDefaultAsync(l => l.LId == lotId);
             if (lot != null)
             {
                 return new LotInfo(lot);
@@ -232,7 +315,12 @@ namespace AuctionWebApp.Server.Services
         public async Task<ulong> GetActualCost(Lot lot)
         {
             IAuctionActions auction = AuctionFactory.GetAuction(lot.LAuctionType);
-            return await auction.GetActualCost(lot, context);
+            return await auction.GetActualCost(lot, DateTime.Now, context);
+        }
+
+        public async Task<Dictionary<byte, string>> GetAuctionTypes()
+        {
+            return await context.AuctionTypes.ToDictionaryAsync(at => at.AtId, at => at.AtName);
         }
     }
 }

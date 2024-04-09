@@ -1,4 +1,5 @@
 ﻿using AuctionWebApp.Server.Data;
+using AuctionWebApp.Server.Data.Dto;
 using AuctionWebApp.Server.Data.Entities;
 using AuctionWebApp.Server.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,17 +9,18 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
 {
     public class EnglishAuction : IAuctionActions
     {
-        private async Task<Bid?> GetLastBid(ulong lotId, MySqlContext context)
+        public async Task<Bid?> GetActualBid(Lot lot, MySqlContext context)
         {
             return await context.Bids
-                            .Where(b => b.BLotId == lotId)
+                            .Where(b => b.BLotId == lot.LId)
                             .OrderByDescending(b => b.BSize)
+                            .ThenBy(b => b.BTime)
                             .FirstOrDefaultAsync();
         }
 
-        public async Task<ulong> GetActualCost(Lot lot, MySqlContext context)
+        public async Task<ulong> GetActualCost(Lot lot, DateTime time, MySqlContext context)
         {
-            var lastBid = await GetLastBid(lot.LId, context);
+            var lastBid = await GetActualBid(lot, context);
             if (lastBid == null)
             {
                 return lot.LInitialCost;
@@ -29,11 +31,11 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
 
         public async Task<bool> BidCheck(Lot lot, ulong amount, DateTime time, MySqlContext context)
         {
-            var actualCost = await GetActualCost(lot, context);
+            var actualCost = await GetActualCost(lot, time, context);
             return amount >= actualCost;
         }
 
-        public async Task<Bid?> AutomaticBid(Lot lot, Bid? lastBid, ulong? maxBid, MySqlContext context)
+        public async Task<Bid?> AutomaticBid(Lot lot, Bid? lastBid, MySqlContext context, ulong? maxBid = null)
         {
             if (lastBid == null)
             {
@@ -45,15 +47,15 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
                 .OrderByDescending(tl => tl.TlMaxAutomaticBid)
                 .ToListAsync();
 
-            if (lotAutomatic == null || lotAutomatic.Count == 0)
-            {
-                return null;
-            }
-
             ulong amount = lastBid.BSize + lot.LCostStep;
             Bid? bid = null;
             if (maxBid == null)
             {
+                if (lotAutomatic == null || lotAutomatic.Count == 0)
+                {
+                    return bid;
+                }
+
                 if (lotAutomatic[0].TlMaxAutomaticBid >= amount)
                 {
                     bid = new()
@@ -67,15 +69,19 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
             }
             else
             {
+                var trackable = new TrackableLot()
+                {
+                    TlLot = lot,
+                    TlUser = lastBid.BParticipant,
+                    TlMaxAutomaticBid = maxBid.Value
+                };
                 //сообщение о принятии автоставки
-                await context.TrackableLots
-                    .AddAsync(
-                    new()
-                    {
-                        TlLot = lot,
-                        TlUser = lastBid.BParticipant,
-                        TlMaxAutomaticBid = maxBid.Value
-                    });
+                await context.TrackableLots.AddAsync(trackable);
+
+                if (lotAutomatic == null || lotAutomatic.Count == 0)
+                {
+                    return null;
+                }
 
                 var autoTimes = ((BigInteger)lotAutomatic[0].TlMaxAutomaticBid - lastBid.BSize) / lot.LCostStep;
                 autoTimes = (autoTimes.IsEven) ? autoTimes-- : autoTimes;
@@ -94,6 +100,8 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
                         BTime = DateTime.Now
                     };
                 }
+
+                lotAutomatic.Add(trackable);
             }
 
             foreach (var item in lotAutomatic)
@@ -106,6 +114,13 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
             }
 
             return bid;
+        }
+
+        public (BigInteger, BigInteger) GetSimulationUserBounds(SimulationInfo simulationInfo, SimulationUser user)
+        {
+            var lowerBound = (BigInteger)user.EstimatedCost - simulationInfo.InitialPrice;
+            var upperBound = (BigInteger)user.Budget - user.EstimatedCost;
+            return (lowerBound, upperBound);
         }
     }
 }

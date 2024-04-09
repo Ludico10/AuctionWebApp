@@ -3,11 +3,13 @@ import { ExtraOptions, PreloadAllModules, RouterModule, Routes } from '@angular/
 
 import { LotDetailComponent } from './lot-detail.component';
 import { LotListComponent } from './lot-list.component';
+import { SimulationComponent } from './simulation.component';
 
 const routes: Routes = [
   { path: '', component: LotListComponent },
   { path: 'lots/:id', component: LotDetailComponent },
-  { path: '**', redirectTo: '/' }
+  { path: 'simulation', component: SimulationComponent },
+  { path: '**', redirectTo: 'simulation' }
 ];
 
 const routerConfig: ExtraOptions = {
