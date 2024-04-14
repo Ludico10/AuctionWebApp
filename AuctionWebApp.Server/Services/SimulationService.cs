@@ -29,7 +29,7 @@ namespace AuctionWebApp.Server.Services
 
             return new LotInfo()
             {
-                Name = "simulation",
+                Name = "simulation" + DateTime.Now.ToString(),
                 SellerId = seller.UId,
                 FinishTime = DateTime.Now.AddHours(simulationInfo.CyclesCount),
                 AuctionTypeId = simulationInfo.AuctionTypeId,
@@ -58,7 +58,7 @@ namespace AuctionWebApp.Server.Services
             };
         }
 
-        Random rand = new Random();
+        readonly Random rand = new();
         private bool haveNextNextGaussian;
         private double nextNextGaussian;
 

@@ -1,7 +1,9 @@
 ﻿using AuctionWebApp.Server.Data;
 using AuctionWebApp.Server.Data.Dto;
 using AuctionWebApp.Server.Interfaces;
+using AuctionWebApp.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace AuctionWebApp.Server.Controllers
 {
@@ -27,12 +29,12 @@ namespace AuctionWebApp.Server.Controllers
 
             var bids = new List<SimulationBidInfo>();
             SimulationBidInfo? lastBid = null;
-            for (int i = 0; i < simulationInfo.CyclesCount; i++)
+            for (int i = 1; i <= simulationInfo.CyclesCount; i++)
             {
                 var bidInfo = simulationService.Process(simulationInfo, i);
                 if (bidInfo != null 
                     && (lastBid == null || bidInfo.SimulationUserId != lastBid.SimulationUserId)
-                    && await auctionService.PlaceBid(lot.LId, dbUsers[i % 2].UId, bidInfo.Size, DateTime.Now.AddHours(i)))
+                    && await auctionService.PlaceBid(lot.LId, dbUsers[bids.Count % 2].UId, bidInfo.Size, DateTime.Now.AddHours(i)))
                 {
                     lastBid = bidInfo;
                     bids.Add(bidInfo);
@@ -40,8 +42,7 @@ namespace AuctionWebApp.Server.Controllers
             }
 
             await auctionService.CloseAuction(lot);
-
-            return Ok(bids);
+            return Json(bids);
         }
     }
 }

@@ -13,11 +13,18 @@
 <div>
   <label>Тип аукциона</label>
   <mat-radio-group aria-label="Select an option" [(ngModel)]="info.AuctionTypeId">
-    @for (key of auctionTypesKeys; track key) {
-    <mat-radio-button [value]="key">{{auctionTypes[key]}}</mat-radio-button>
-    }
+    <mat-radio-button *ngFor = "let at of auctionTypes | keyvalue"[value]="at.key">{{at.value}}</mat-radio-button>
   </mat-radio-group>
 </div>
 <div>
-  <input type="button" value="Сохранить" (click)="run()" class="btn btn-success" />
+  <simulation-user-form *ngFor = "let user of info.Users; index as i" [(user)] ="info.Users[i]"></simulation-user-form>
+</div>
+<div>
+  <input type="button" value="Добавить" (click)="addUser()" class="btn btn-success" />
+</div>
+<div>
+  <input type="button" value="Запустить" (click)="run()" class="btn btn-success" />
+</div>
+<div>
+  <grafico-barras [list]="graficoInfo"></grafico-barras>
 </div>

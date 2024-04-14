@@ -14,9 +14,9 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
             return new Task<Bid?>(() => null);
         }
 
-        public Task<bool> BidCheck(Lot lot, ulong amount, DateTime time, MySqlContext context)
+        public async Task<bool> BidCheck(Lot lot, ulong amount, DateTime time, MySqlContext context)
         {
-            return new Task<bool>(() => amount > GetActualCost(lot, time, context).Result);
+            return amount > await GetActualCost(lot, time, context);
         }
 
         public virtual async Task<Bid?> GetActualBid(Lot lot, MySqlContext context)

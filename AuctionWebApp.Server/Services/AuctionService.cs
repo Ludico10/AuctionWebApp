@@ -196,16 +196,17 @@ namespace AuctionWebApp.Server.Services
             {
                 Bid? bid = new()
                 {
-                    BLot = lot,
-                    BParticipant = user,
+                    BLotId = lot.LId,
+                    BParticipantId = user.UId,
                     BSize = amount,
                     BTime = time
                 };
                 await context.Bids.AddAsync(bid);
+                await context.SaveChangesAsync();
                 //отправить сообщение о ставке
 
                 //есть шанс неправильной работы при почти одновременном добавлении автоматических ставок, но уже голова болит об этом думать
-                var autoBid = await auction.AutomaticBid(lot, bid, context, maxAmount);
+                Bid? autoBid = await auction.AutomaticBid(lot, bid, context, maxAmount);
                 Bid? prevBid = null;
                 while (autoBid != null)
                 {

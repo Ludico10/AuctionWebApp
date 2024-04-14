@@ -9,11 +9,15 @@ import { LotDetailComponent } from './lot-detail.component';
 import { LotListComponent } from './lot-list.component';
 import { AppComponent } from './app.component';
 import { SimulationComponent } from './simulation.component';
+import { SimulationUserFormComponent } from './simulation-user-form.component';
+import { GraficoBarrasComponent } from './grafico-barras.component';
 
 @NgModule({
   declarations: [
     LotDetailComponent,
     LotListComponent,
+    GraficoBarrasComponent,
+    SimulationUserFormComponent,
     SimulationComponent,
     AppComponent
   ],

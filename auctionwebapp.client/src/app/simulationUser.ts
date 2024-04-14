@@ -1,11 +1,12 @@
 export class SimulationUser {
   constructor(
     public Id: number,
-    public Name: string,
-    public EstimatedCost: number,
-    public Buget: number,
-    public BetProbabilityBefore: number,
-    public BetProbabilityAfter: number,
-    public Q: number
+    public Color: string,
+    public Name: string = "tester" + Id,
+    public EstimatedCost: number = 0,
+    public Budget: number = 0,
+    public BetProbabilityBefore: number = 0,
+    public BetProbabilityAfter: number = 0,
+    public Q: number = 0
   ) { }
 }

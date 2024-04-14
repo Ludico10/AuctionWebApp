@@ -40,6 +40,7 @@ builder.Services.AddHangfire(h => h.SetDataCompatibilityLevel(CompatibilityLevel
 builder.Services.AddScoped<IAuctionService, AuctionService>();
 builder.Services.AddScoped<IHashService, HashService>();
 builder.Services.AddScoped<ITokenService, TokenService>(_ => new TokenService(authOptions));
+builder.Services.AddScoped<ISimulationService, SimulationService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

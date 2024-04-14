@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace AuctionWebApp.Server.Data.Entities;
+﻿namespace AuctionWebApp.Server.Data.Entities;
 
 public partial class Bid
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public ulong BId1 { get; set; }
 
     public DateTime BTime { get; set; }
