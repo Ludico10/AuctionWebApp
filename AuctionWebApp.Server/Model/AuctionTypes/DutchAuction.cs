@@ -11,7 +11,8 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
     {
         public Task<Bid?> AutomaticBid(Lot lot, Bid? lastBid, MySqlContext context, ulong? maxBid = null)
         {
-            return new Task<Bid?>(() => null);
+            Bid? bid = null;
+            return Task.FromResult(bid);
         }
 
         public async Task<bool> BidCheck(Lot lot, ulong amount, DateTime time, MySqlContext context)
@@ -19,7 +20,8 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
             var bidCount = await context.Bids
                                         .Where(b => b.BLotId == lot.LId)
                                         .CountAsync();
-            return bidCount == 0 && amount >= await GetActualCost(lot, time, context);
+            var actual = await GetActualCost(lot, time, context);
+            return bidCount == 0 && amount >= actual;
         }
 
         public async Task<Bid?> GetActualBid(Lot lot, MySqlContext context)
@@ -33,13 +35,10 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
 
         public Task<ulong> GetActualCost(Lot lot, DateTime time, MySqlContext context)
         {
-            return new Task<ulong>(() =>
-            {
-                var hours = (lot.LFinishTime - lot.LStartTime).Hours;
-                var leftHours = (lot.LFinishTime - time).Hours;
-                decimal step = ((decimal)lot.LInitialCost - lot.LCostStep) / hours;
-                return lot.LCostStep + Convert.ToUInt64(leftHours * step);
-            });
+            var hours = (lot.LFinishTime - lot.LStartTime).Hours;
+            var leftHours = (lot.LFinishTime - time).Hours;
+            decimal step = ((decimal)lot.LInitialCost - lot.LCostStep) / hours;
+            return Task.FromResult(lot.LCostStep + Convert.ToUInt64(leftHours * step));
         }
 
         public (BigInteger, BigInteger) GetSimulationUserBounds(SimulationInfo simulationInfo, SimulationUser user)

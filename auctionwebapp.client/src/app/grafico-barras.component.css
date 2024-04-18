@@ -34,8 +34,8 @@
 }
 
   .grafico .legends span {
-    width: 60px;
-    margin: 0 15px;
+    min-width: 2px;
+    margin: 0 5px;
   }
 
 .grafico .bars{
@@ -47,9 +47,9 @@
 }
 
 .grafico .bar {
-  width: 60px;
+  min-width: 2px;
   min-height: 2px;
-  margin: 0 15px;
+  margin: 0 5px;
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
 }

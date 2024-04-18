@@ -3,17 +3,17 @@
   <input type="number" [(ngModel)]="info.InitialPrice" class="form-control" />
 </div>
 <div class="form-group">
-  <label>Шаг ставки</label>
+  <label>Шаг ставки:</label>
   <input type="number" [(ngModel)]="info.PriceStep" class="form-control" />
 </div>
 <div class="form-group">
-  <label>Количество циклов</label>
+  <label>Количество циклов:</label>
   <input type="number" [(ngModel)]="info.CyclesCount" class="form-control" />
 </div>
 <div>
-  <label>Тип аукциона</label>
+  <label>Тип аукциона:</label><br />
   <mat-radio-group aria-label="Select an option" [(ngModel)]="info.AuctionTypeId">
-    <mat-radio-button *ngFor = "let at of auctionTypes | keyvalue"[value]="at.key">{{at.value}}</mat-radio-button>
+    <mat-radio-button *ngFor = "let at of auctionTypes | keyvalue"[value]="at.key">{{at.value}}</mat-radio-button><br />
   </mat-radio-group>
 </div>
 <div>
@@ -25,6 +25,18 @@
 <div>
   <input type="button" value="Запустить" (click)="run()" class="btn btn-success" />
 </div>
-<div>
-  <grafico-barras [list]="graficoInfo"></grafico-barras>
+<div *ngIf="errorString; else graph">
+  <label>{{errorString}}</label>
 </div>
+<ng-template #graph>
+  <div *ngIf="result">
+    <grafico-barras [list]="graficoInfo"></grafico-barras>
+    <div *ngIf="result.winnerId; else other_content">
+      <label>Победитель аукциона: {{info.Users[result!.winnerId! - 1].Name}}</label><br />
+      <label>Конечная стоимость: {{result!.resultCost}}</label>
+    </div>
+    <ng-template #other_content>
+      <label>Лот не продан</label>
+    </ng-template>
+  </div>
+</ng-template>

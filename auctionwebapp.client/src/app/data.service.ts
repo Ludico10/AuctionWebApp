@@ -17,4 +17,8 @@ export class DataService {
   getAuctionTypes() {
     return this.http.get("https://localhost:7183/lists/auctionTypes");
   }
+
+  getCategories() {
+    return this.http.get("https://localhost:7183/lists/categories")
+  }
 }

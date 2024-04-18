@@ -246,18 +246,23 @@ namespace AuctionWebApp.Server.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task CloseAuction(Lot auction)
+        public async Task<ulong> CloseAuction(Lot auction)
         {
             IAuctionActions actions = AuctionFactory.GetAuction(auction.LAuctionType);
             var winnerBid = await actions.GetActualBid(auction, context);
+            ulong resultCost;
             if (winnerBid == null)
             {
-                await context.FinishedAuctions.AddAsync(new FinishedAuction(auction, auction.LSellerId, auction.LInitialCost));
+                resultCost = auction.LInitialCost;
+                await context.FinishedAuctions.AddAsync(new FinishedAuction(auction, auction.LSellerId, resultCost));
             }
             else
             {
-                await context.FinishedAuctions.AddAsync(new FinishedAuction(auction, winnerBid.BParticipantId, winnerBid.BSize));
+                resultCost = winnerBid.BSize;
+                await context.FinishedAuctions.AddAsync(new FinishedAuction(auction, winnerBid.BParticipantId, resultCost));
             }
+
+            return resultCost;
         }
 
         public async Task<List<Lot>> GetLotsPage(int pageNumber, int lotsOnPage, ushort category)
@@ -322,6 +327,11 @@ namespace AuctionWebApp.Server.Services
         public async Task<Dictionary<byte, string>> GetAuctionTypes()
         {
             return await context.AuctionTypes.ToDictionaryAsync(at => at.AtId, at => at.AtName);
+        }
+
+        public async Task<Dictionary<ushort, string>> GetCategories()
+        {
+            return await context.Categories.ToDictionaryAsync(c => c.CId, c => c.CName);
         }
     }
 }

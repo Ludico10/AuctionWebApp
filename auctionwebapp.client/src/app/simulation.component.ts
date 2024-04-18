@@ -1,10 +1,10 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { SimulationService } from "./simulation.service";
 import { SimulationInfo } from "./simulationInfo";
-import { SimulationBidInfo } from "./simulationBidInfo";
 import { DataService } from "./data.service";
 import { SimulationUser } from "./simulationUser";
 import { GraficoModel } from "./grafico.model";
+import { SimulationResult } from "./simulationResult";
 
 @Component({
   templateUrl: './simulation.component.html',
@@ -15,8 +15,10 @@ export class SimulationComponent implements OnInit {
 
   auctionTypes: Map<number, string> = new Map();
   info: SimulationInfo = new SimulationInfo();
-  bids?: Array<SimulationBidInfo>;
+  result?: SimulationResult;
   graficoInfo: GraficoModel[] = new Array<GraficoModel>();
+
+  errorString: string = '';
 
   constructor(private simulationService: SimulationService, private dataService: DataService) {}
 
@@ -27,7 +29,9 @@ export class SimulationComponent implements OnInit {
 
   getRandomColor = function () {
     return {
-      color: '#' + Math.floor(Math.random() * 16777215).toString()
+      color: '#' + Math.floor(Math.random() * 255).toString(16)
+        + Math.floor(Math.random() * 255).toString(16)
+        + Math.floor(Math.random() * 255).toString(16)
     }
   };
 
@@ -37,13 +41,31 @@ export class SimulationComponent implements OnInit {
   }
 
   run() {
-    this.simulationService.runSimulation(this.info).subscribe((data: SimulationBidInfo[]) => {
-      this.bids = data
+    this.errorString = '';
+    if (this.info.CyclesCount < 1) {
+      this.errorString = "Количество раундов аукциона не может быть меньше 1.";
+      return;
+    }
+
+    if (this.info.InitialPrice < 0 || this.info.PriceStep < 1) {
+      this.errorString = "Значение поля, содержащего цену, не может быть отрицательным. Шаг стевки не может быть меньше 1.";
+      return;
+    }
+
+    this.info.Users.forEach(user => {
+      if (user.Budget < 0 || user.EstimatedCost < 0) {
+        this.errorString = "Значение поля, содержащего цену, не может быть отрицательным.";
+        return;
+      }
+    });
+
+    this.simulationService.runSimulation(this.info).subscribe((data: SimulationResult) => {
+      this.result = data
       let graph = new Array<GraficoModel>();
       for (let i = 1; i <= this.info.CyclesCount; i++) {
         graph.push(new GraficoModel(i.toString()))
       }
-      this.bids?.forEach(bid => {
+      this.result.bids.forEach(bid => {
         graph[bid.cycle - 1].Value = bid.size;
         graph[bid.cycle - 1].Color = this.info.Users[bid.simulationUserId - 1].Color;
       });

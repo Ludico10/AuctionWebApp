@@ -1,3 +1,8 @@
-<div>
+<main class="color-bk-primary row">
   <a routerLink="/lots/2" class="nav-link">Сделать ставку</a>
-</div>
+  <div class="nav-item-container">
+    <p *ngFor="let category of categories | keyvalue">
+      <a href="/main/?category.key">{{category.value}}</a>
+    </p>
+  </div>
+</main>

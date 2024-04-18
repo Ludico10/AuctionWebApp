@@ -1,0 +1,32 @@
+
+.color-bk-primary{
+    background-color: var(--color-primary);
+}
+
+.color-bk-header {
+    background-color: var(--color-header);
+}
+
+.color-bk-footer {
+    background-color: var(--color-footer);
+}
+
+.color-bk-reg-panel {
+    background-color: var(--color-registration-panel);
+}
+
+.color-bk-nav-panel {
+    background-color: var(--color-nav-panel);
+}
+
+.color-bk-btn-primary {
+    background-color: var(--color-button-primary);
+}
+
+.color-text-primary {
+    color: var(--color-primary);
+}
+
+.color-text-dangerous {
+    color: var( --color-dangerous-text);
+}

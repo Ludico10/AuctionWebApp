@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import { SimulationComponent } from './simulation.component';
 import { SimulationUserFormComponent } from './simulation-user-form.component';
 import { GraficoBarrasComponent } from './grafico-barras.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { GraficoBarrasComponent } from './grafico-barras.component';
   ],
   imports: [
     BrowserModule, HttpClientModule,
-    AppRoutingModule, FormsModule, MatRadioModule
+    AppRoutingModule, FormsModule,
+    MatRadioModule, CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

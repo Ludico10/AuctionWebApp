@@ -12,5 +12,11 @@ namespace AuctionWebApp.Server.Controllers
         {
             return Json(await auctionService.GetAuctionTypes());
         }
+
+        [HttpGet("categories")]
+        public async Task<JsonResult> GetCategoies()
+        {
+            return Json(await auctionService.GetCategories());
+        }
     }
 }

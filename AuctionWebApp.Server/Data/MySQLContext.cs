@@ -270,7 +270,6 @@ public partial class MySqlContext : DbContext, IDbContext
             entity.HasIndex(e => e.BParticipantId, "fk_b_participant_idx");
 
             entity.Property(e => e.BId1)
-                .ValueGeneratedNever()
                 .HasColumnName("b_id");
             entity.Property(e => e.BLotId)
                 .HasColumnType("bigint(9) unsigned zerofill")

@@ -11,7 +11,8 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
     {
         public Task<Bid?> AutomaticBid(Lot lot, Bid? lastBid, MySqlContext context, ulong? maxBid = null)
         {
-            return new Task<Bid?>(() => null);
+            Bid? bid = null;
+            return Task.FromResult(bid);
         }
 
         public async Task<bool> BidCheck(Lot lot, ulong amount, DateTime time, MySqlContext context)
@@ -30,7 +31,7 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
 
         public Task<ulong> GetActualCost(Lot lot, DateTime time, MySqlContext context)
         {
-            return new Task<ulong>(() => lot.LInitialCost);
+            return Task.FromResult(lot.LInitialCost);
         }
 
         public (BigInteger, BigInteger) GetSimulationUserBounds(SimulationInfo simulationInfo, SimulationUser user)

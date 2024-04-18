@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { SimulationInfo } from "./simulationInfo";
 import { Injectable } from "@angular/core";
-import { SimulationBidInfo } from "./simulationBidInfo";
+import { SimulationResult } from "./simulationResult";
 
 @Injectable()
 export class SimulationService {
@@ -11,6 +11,6 @@ export class SimulationService {
   constructor(private http: HttpClient) { }
 
   runSimulation(info: SimulationInfo) {
-    return this.http.post<Array<SimulationBidInfo>>(this.url, info);
+    return this.http.post<SimulationResult>(this.url, info);
   }
 }

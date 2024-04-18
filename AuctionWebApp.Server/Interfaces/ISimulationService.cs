@@ -9,5 +9,6 @@ namespace AuctionWebApp.Server.Interfaces
         public Task<List<User>> FindTestUsers(MySqlContext context);
         public LotInfo Preparation(SimulationInfo simulationInfo, User seller);
         public SimulationBidInfo? Process(SimulationInfo simulationInfo, int cycle);
+        public void DetermineWinner(SimulationResult simulationResult);
     }
 }

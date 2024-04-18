@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-primary: #a4d8f1;
+  --color-header: #7cb1da;
+  --color-footer: #6287a3;
+  --color-logo: #ffd800;
+  --color-text-primary: #171616;
+  --color-text-hover: #e1dce0;
+  --color-registration-panel: #efefd3;
+  --color-button-primary: #27c2c0;
+  --color-nav-panel: #b3dbee;
+  --color-nav-panel-border: #769cae;
+  --color-row-hover: #779fb2;
+  --color-burger-menu: #7cb1da;
+  --color-dangerous-text: #7c1f1f;
+  --color-button-color: #47a8b9;
+  --color-button-hover-color: #4ac1d5;
+  --color-list-border-color: #3f4a4c;
+}

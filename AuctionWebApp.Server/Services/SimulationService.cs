@@ -52,10 +52,19 @@ namespace AuctionWebApp.Server.Services
 
             return new SimulationBidInfo()
             {
-                Size = Convert.ToUInt64(potencialBid),
+                Size = Convert.ToUInt64(Math.Max(potencialBid, 0)),
                 Cycle = cycle,
                 SimulationUserId = users[activeUser].Id
             };
+        }
+
+        public void DetermineWinner(SimulationResult simulationResult)
+        {
+            var winnerBid = simulationResult.Bids
+                                    .OrderBy(b => b.Cycle)
+                                    .FirstOrDefault(b => b.Size == simulationResult.ResultCost);
+            simulationResult.WinnerId = winnerBid != null ? winnerBid.SimulationUserId : null;
+
         }
 
         readonly Random rand = new();

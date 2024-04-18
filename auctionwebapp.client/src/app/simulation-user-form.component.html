@@ -1,14 +1,16 @@
-<div class="form-border" [style.background-color]="user.Color">
-  <div class="form-group">
-    <label>Название</label>
-    <input type="text" [(ngModel)]="user.Name" class="form-control" />
+<div class="sim-user">
+<div class="box" [style.background-color]="user.Color">
+  <div>
+    <label>Название:</label>
+    <input type="text" [(ngModel)]="user.Name" style="margin-left: 27px" />
   </div>
-  <div class="form-group">
-    <label>Оценка лота</label>
-    <input type="number" [(ngModel)]="user.EstimatedCost" class="form-control" />
+  <div>
+    <label>Оценка лота:</label>
+    <input type="number" [(ngModel)]="user.EstimatedCost" style="margin-left: 6px" />
   </div>
-  <div class="form-group">
-    <label>Бюджет</label>
-    <input type="number" [(ngModel)]="user.Budget" class="form-control" />
+  <div>
+    <label>Бюджет:</label>
+    <input type="number" [(ngModel)]="user.Budget" style="margin-left: 37px" />
   </div>
 </div>
+ </div>

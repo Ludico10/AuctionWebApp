@@ -1,0 +1,116 @@
+@import url('./_colors.css');
+
+* {
+    color: var(--color-text-primary);
+}
+
+.main-header{
+    height: 5vh;
+    min-height: 50px;
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-text-primary);
+}
+
+a:hover{
+    color: var(--color-text-hover);
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 1px 1px 2px black;
+}
+
+.main-container{
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.main--center-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.footer {
+    height: 15vh;
+    min-height: 130px;
+}
+
+.footer--p{
+    margin: 2px 2px 0px 2px;
+}
+
+
+.image-container{
+    overflow: hidden;
+    padding: 5px;
+    max-width: 200px;
+    height: 120px;
+    object-fit: contain;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-row{
+    margin: 10px 5px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+
+
+
+
+.custom-file-upload{
+    display: inline-flex;
+    padding: 6px 12px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-button-color);
+}
+
+.custom-file-upload:hover{
+    background-color: var(--color-button-hover-color);
+}
+
+
+
+
+.common--form-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.common--form-row{
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.common--form-row label{
+    width: 100px;
+}

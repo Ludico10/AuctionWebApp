@@ -41,8 +41,13 @@ namespace AuctionWebApp.Server.Controllers
                 }
             }
 
-            await auctionService.CloseAuction(lot);
-            return Json(bids);
+            var result = new SimulationResult
+            {
+                Bids = bids,
+                ResultCost = await auctionService.CloseAuction(lot)
+            };
+            simulationService.DetermineWinner(result);
+            return Json(result);
         }
     }
 }

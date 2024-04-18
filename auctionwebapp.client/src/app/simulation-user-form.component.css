@@ -1,0 +1,9 @@
+.sim-user .box{
+    margin: 2px;
+    border: 1px solid;
+    width: 270px;
+}
+
+.sim-user .label {
+    margin-left: 5px;
+}

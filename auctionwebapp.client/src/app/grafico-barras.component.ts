@@ -13,6 +13,7 @@ export class GraficoBarrasComponent implements OnInit {
 
   public Total = 0;
   public MaxHeight = 160;
+  public Width = '1000px';
 
   constructor() { }
 
@@ -27,11 +28,13 @@ export class GraficoBarrasComponent implements OnInit {
   MontarGrafico() {
     this.Total = 0;
     this.list.forEach(element => {
-      this.Total += element.Value;
+      this.Total = Math.max(element.Value, this.Total);
     });
 
+    this.Width = Math.round(1000 / (this.list.length + 1)) + 'px'
     this.list.forEach(element => {
       element.Size = Math.round((element.Value * this.MaxHeight) / this.Total) + '%';
+      element.Width = this.Width;
     });
   }
 
