@@ -48,6 +48,7 @@ namespace AuctionWebApp.Server.Services
                 await context.CountryDeliveries.AddAsync(new CountryDelivery(lot.LId, delivery));
             }
 
+            await context.LotCategories.AddAsync(new LotCategory(lot.LId, 0));
             foreach (var category in lotInfo.CategoryInfos)
             {
                 await context.LotCategories.AddAsync(new LotCategory(lot.LId, category));
@@ -255,6 +256,7 @@ namespace AuctionWebApp.Server.Services
             {
                 resultCost = auction.LInitialCost;
                 await context.FinishedAuctions.AddAsync(new FinishedAuction(auction, auction.LSellerId, resultCost));
+                //уведомление
             }
             else
             {
@@ -312,10 +314,42 @@ namespace AuctionWebApp.Server.Services
             var lot = await context.Lots.SingleOrDefaultAsync(l => l.LId == lotId);
             if (lot != null)
             {
-                return new LotInfo(lot);
+                var auction = AuctionFactory.GetAuction(lot.LAuctionType);
+                var costStep = auction.GetCostStep(lot);
+                return new LotInfo(lot, costStep);
             }
 
             return null;
+        }
+
+        public async Task<List<CommentInfo>> GetLotComments(ulong lotId)
+        {
+            var comments = await context.Comments
+                                        .Where(c => c.ComLotId == lotId)
+                                        .OrderBy(c => c.ComTime)
+                                        .ToListAsync();
+            var result = new List<CommentInfo>();
+            if (comments != null)
+            {
+                foreach (var comment in comments)
+                {
+                    result.Add(new CommentInfo(comment));
+                }
+            }
+
+            return result;
+        }
+
+        public async Task PlaceComment(CommentInfo comment, ulong lotId)
+        {
+            await context.Comments.AddAsync(new Comment(comment, lotId));
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<ulong?> GetActualCost(ulong lotId)
+        {
+            var lot = await context.Lots.FirstOrDefaultAsync(l => l.LId == lotId);
+            return (lot != null) ? await GetActualCost(lot) : null;
         }
 
         public async Task<ulong> GetActualCost(Lot lot)
@@ -331,7 +365,9 @@ namespace AuctionWebApp.Server.Services
 
         public async Task<Dictionary<ushort, string>> GetCategories()
         {
-            return await context.Categories.ToDictionaryAsync(c => c.CId, c => c.CName);
+            return await context.Categories
+                .Where(c => c.CId > 0)
+                .ToDictionaryAsync(c => c.CId, c => c.CName);
         }
     }
 }

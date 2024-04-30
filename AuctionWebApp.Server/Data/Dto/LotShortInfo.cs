@@ -8,7 +8,7 @@ namespace AuctionWebApp.Server.Data.Dto
         public ulong CurrentCost { get; set; }
         public string Name { get; set; } = null!;
         public byte AuctionTypeId { get; set; }
-        public DateTime FinishTime { get; set; }
+        public bool Actual { get; set; }
 
         public LotShortInfo(Lot lot, ulong cost) 
         {
@@ -16,7 +16,7 @@ namespace AuctionWebApp.Server.Data.Dto
             CurrentCost = cost;
             Name = lot.LName;
             AuctionTypeId = lot.LAuctionType;
-            FinishTime = lot.LFinishTime;
+            Actual = lot.LStartTime.AddDays(1) >= DateTime.Now;
         }
     }
 }

@@ -25,4 +25,10 @@ public partial class LotCategory
         LcPremiumStart = categoryInfo.PremiumStart;
         LcPremiumEnd = categoryInfo.PremiumEnd;
     }
+
+    public LotCategory(ulong lotId, ushort categoryId)
+    {
+        LcLotId = lotId;
+        LcCategoryId = categoryId;
+    }
 }

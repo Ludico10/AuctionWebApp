@@ -6,6 +6,7 @@ namespace AuctionWebApp.Server.Interfaces
     public interface IAuctionService
     {
         public Task<bool> PlaceBid(ulong lotId, ulong userId, ulong amount, DateTime time, ulong? maxAmount = null);
+        public Task<ulong?> GetActualCost(ulong lotId);
         public Task AuctionsClosing();
         public Task<ulong> CloseAuction(Lot auction);
         public Task<List<Lot>> GetLotsPage(int pageNumber, int lotsOnPage, ushort category);
@@ -14,6 +15,8 @@ namespace AuctionWebApp.Server.Interfaces
         public Task<Lot?> PlaceLot(LotInfo lotInfo);
         public Task ChangeLot(LotInfo lotInfo);
         public Task RemoveLot(ulong lotId, ulong winnerId, ulong cost);
+        public Task<List<CommentInfo>> GetLotComments(ulong lotId);
+        public Task PlaceComment(CommentInfo comment, ulong lotId);
         public Task<Dictionary<byte, string>> GetAuctionTypes();
         public Task<Dictionary<ushort, string>> GetCategories();
     }

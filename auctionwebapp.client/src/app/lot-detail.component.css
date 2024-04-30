@@ -1,0 +1,85 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.h1 {
+  color: #9D2222;
+}
+
+.info-box {
+    display: flex;
+}
+
+.info-box .left-part {
+    float: left;
+    width: 60%;
+    display: flex;
+}
+
+.info-box .left-part .img {
+    margin: auto;
+}
+
+.info-box .right-part {
+    float: right;
+    width: 40%;
+}
+
+  .info-box .right-part .title {
+    color: #9D2222;
+  }
+
+  .info-box .right-part .user-box {
+      display: flex;
+      width: 50%;
+  }
+
+  .info-box .right-part .user-box .img {
+      float: left;
+      width: 20%;
+      max-height: 100px;
+  }
+
+  .info-box .right-part .user-box .info {
+      float: right;
+  }
+
+    .info-box .right-part .user-box .info .name {
+      color: #9D2222;
+    }
+
+    .info-box .right-part .user-box .info .rating-box {
+      display: flex;
+    }
+
+    .info-box .right-part .user-box .info .rating-box .img {
+      width: 20%;
+    }
+
+  .info-box .right-part .button-conteiner {
+      display: block;
+  }
+
+  .info-box .left-table {
+      float: left;
+      width: 50%;
+  }
+
+  .info-box .right-table {
+      float: right;
+      width: 50%
+  }
+
+  .comment-box {
+      display:flex
+  }
+
+  .comment-box .img {
+      float: left;
+      width: 10%;
+      max-width: 100px;
+  }
+
+  .comment-box .info {
+      float: right;
+  }

@@ -11,6 +11,7 @@ namespace AuctionWebApp.Server.Interfaces
         public Task<Bid?> AutomaticBid(Lot lot, Bid? lastBid, MySqlContext context, ulong? maxBid = null);
         public Task<ulong> GetActualCost(Lot lot, DateTime time, MySqlContext context);
         public Task<Bid?> GetActualBid(Lot lot, MySqlContext context);
+        public ulong GetCostStep(Lot lot);
         public (BigInteger, BigInteger) GetSimulationUserBounds(SimulationInfo simulationInfo, SimulationUser user);
     }
 }

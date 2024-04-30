@@ -1,11 +1,109 @@
-<div class="form-group">
-  <label>Идентификатор пользователя</label>
-  <input type="number" [(ngModel)]="bid.userId" class="form-control" />
-</div>
-<div class="form-group">
-  <label>Ставка</label>
-  <input type="number" [(ngModel)]="bid.size" class="form-control" />
+<header-section></header-section>
+<div class="info-box">
+  <div class="left-part">
+    <img class="img" src="../assets/images/slider-img.png" />
+  </div>
+  <div class="right-part">
+    <h1 class="title">{{lot!.name}}</h1>
+    <h6>Времени до завершения: {{ time | date: 'hh:mm:ss a' }}</h6>
+    <div>
+      Категории:
+      <a *ngFor="let cat of lot!.categoryInfos" href="/lots">{{cat.categoryName}}</a>
+    </div>
+    <h6>Состояние: {{lot!.conditionName}}</h6>
+
+    <div class="user-box">
+      <img src="../assets/images/client-1.png" />
+      <div class="info">
+        <h3 class="name">{{lot!.sellerName}}</h3>
+        <div class="rating-box">
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            @if (lot!.sellerRating >= 2 * i) {
+              <img src="../assets/images/twitter.png" />
+            }
+            @else {
+              <img src="../assets/images/youtube.png" />
+            }
+          }
+        </div>
+      </div>
+    </div>
+
+    <h6>Вид аукциона: {{lot!.auctionTypeName}}</h6>
+    <div *ngIf="lot!.auctionTypeId <= 2">
+      <h5>Шаг цены: {{lot!.costStep / 100}} BYN</h5>
+    </div>
+    <h2>Текущая стоимость:</h2>
+    <h1 class="title">{{currentCost / 100}} BYN</h1>
+    <div class="button-conteiner">
+      <button (click)="placeBid()">сделать ставку</button>
+      <button>
+        <img src="../assets/images/twitter.png" />
+      </button>
+      <button>
+        <img src="../assets/images/twitter.png" />
+      </button>
+    </div>
+  </div>
 </div>
 <div>
-  <input type="button" value="Сохранить" (click)="save()" class="btn btn-success" />
+  <h1>Описание</h1>
+  {{lot!.description}}
+  <div class="info-box">
+    <div *ngIf="lot!.parameters.size != 0" class="left-table">
+      <div>
+        <table>
+          <caption>Дополнительные параметры:</caption>
+          @for (param of lot!.parameters | keyvalue; track param) {
+            <tr>
+            <th>{{param.key}}</th>
+            @if(param.value) {
+              <th>{{param.value}}</th>
+            }
+            @else {
+              <th>-</th>
+            }
+            </tr>
+          }
+        </table>
+      </div>
+    </div>
+    <div [class.right-table]="lot!.parameters.size != 0" class="right-table">
+      <div *ngIf="lot!.deliveryInfos.length != 0; else noDelivery">
+        <table>
+          <caption>Доставка:</caption>
+          @for (delivery of lot!.deliveryInfos; track delivery) {
+          <tr>
+            <th>{{delivery.countryName}}</th>
+            <th>{{delivery.size / 100}} BYN</th>
+          </tr>
+          }
+        </table>
+      </div>
+      <ng-template #noDelivery>
+        Доставка только самовывозом
+      </ng-template>
+    </div>
+  </div>
+</div>
+<div>
+  <h1>Комментарии</h1>
+  <div *ngIf="comments.length != 0; else noComments">
+    <div *ngFor="let com of comments" style="comment-box">
+      <img src="../assets/images/client-2.png" />
+      <div style="info">
+        <h5>{{com.userName}}  {{com.time | date: 'hh:mm:ss a' }}</h5>
+        <div>{{com.text}}</div>
+      </div>
+    </div>
+  </div>
+  <ng-template #noComments>
+    Здесь пока нет комментариев
+  </ng-template>
+  <div>
+    <input type="text" placeholder="Введите текст" [(ngModel)]="newComment.text">
+    <button (click)="placeComment()">
+      Отправить
+    </button>
+  </div>
 </div>

@@ -1,3 +1,4 @@
+<header-section></header-section>
 <div class="form-group">
   <label>Начальная цена:</label>
   <input type="number" [(ngModel)]="info.InitialPrice" class="form-control" />
@@ -13,7 +14,7 @@
 <div>
   <label>Тип аукциона:</label><br />
   <mat-radio-group aria-label="Select an option" [(ngModel)]="info.AuctionTypeId">
-    <mat-radio-button *ngFor = "let at of auctionTypes | keyvalue"[value]="at.key">{{at.value}}</mat-radio-button><br />
+    <mat-radio-button *ngFor = "let at of auctionTypes | keyvalue" [value]="at.key">{{at.value}}</mat-radio-button><br />
   </mat-radio-group>
 </div>
 <div>

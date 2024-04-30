@@ -33,12 +33,22 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
                 .FirstOrDefaultAsync();
         }
 
-        public Task<ulong> GetActualCost(Lot lot, DateTime time, MySqlContext context)
+        private decimal CalculateStep(Lot lot)
         {
             var hours = (lot.LFinishTime - lot.LStartTime).Hours;
+            return ((decimal)lot.LInitialCost - lot.LCostStep) / hours;
+        }
+
+        public Task<ulong> GetActualCost(Lot lot, DateTime time, MySqlContext context)
+        {
             var leftHours = (lot.LFinishTime - time).Hours;
-            decimal step = ((decimal)lot.LInitialCost - lot.LCostStep) / hours;
+            decimal step = CalculateStep(lot);
             return Task.FromResult(lot.LCostStep + Convert.ToUInt64(leftHours * step));
+        }
+
+        public ulong GetCostStep(Lot lot)
+        {
+            return Convert.ToUInt64(CalculateStep(lot));
         }
 
         public (BigInteger, BigInteger) GetSimulationUserBounds(SimulationInfo simulationInfo, SimulationUser user)

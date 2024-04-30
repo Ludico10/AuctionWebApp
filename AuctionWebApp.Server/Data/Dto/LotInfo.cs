@@ -8,6 +8,8 @@ namespace AuctionWebApp.Server.Data.Dto
         public string Name { get; set; } = null!;
         public string Description { get; set; } = "";
         public ulong SellerId { get; set; }
+        public string SellerName { get; set; } = "";
+        public int SellerRating { get; set; }
         public DateTime FinishTime { get; set; }
         public byte AuctionTypeId { get; set; }
         public string AuctionTypeName { get; set; } = "";
@@ -22,19 +24,21 @@ namespace AuctionWebApp.Server.Data.Dto
 
         public LotInfo() { }
 
-        public LotInfo(Lot lot)
+        public LotInfo(Lot lot, ulong step)
         {
             Id = lot.LId;
             Name = lot.LName;
             Description = lot.LDescription;
             SellerId = lot.LSellerId;
+            SellerName = lot.LSeller.UName;
+            SellerRating = lot.LSeller.URating;
             FinishTime = lot.LFinishTime;
             AuctionTypeId = lot.LAuctionType;
             AuctionTypeName = lot.LAuctionTypeNavigation.AtName;
             ConditionId = lot.LConditionId;
             ConditionName = lot.LCondition.IcName;
             InitialCost = lot.LInitialCost;
-            CostStep = lot.LCostStep;
+            CostStep = step;
             Parameters = lot.LotAdditionalParameters.ToDictionary(lap => lap.LapName, lap => lap.LapValue);
             var delInfos = new List<DeliveryInfo>();
             foreach (var info  in lot.CountryDeliveries)

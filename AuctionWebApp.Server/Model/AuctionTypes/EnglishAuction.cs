@@ -116,6 +116,11 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
             return bid;
         }
 
+        public ulong GetCostStep(Lot lot) 
+        { 
+            return lot.LCostStep; 
+        }
+
         public (BigInteger, BigInteger) GetSimulationUserBounds(SimulationInfo simulationInfo, SimulationUser user)
         {
             var lowerBound = (BigInteger)user.EstimatedCost - simulationInfo.InitialPrice;

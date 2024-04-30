@@ -8,8 +8,6 @@ namespace AuctionWebApp.Server.Controllers
     [Route("lots")]
     public class LotsController(IAuctionService auctionService) : Controller
     {
-        private readonly int itemsOnPage = 10;
-
         [HttpPost("{lotId}")]
         public async Task<IActionResult> PostAsync([FromBody] BidRequest newBid)
         {
@@ -22,14 +20,45 @@ namespace AuctionWebApp.Server.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpGet("bids/{lotId}")]
+        public async Task<IActionResult> GetCostAsync(ulong lotId)
+        {
+            if (ModelState.IsValid)
+            {
+                var cost = await auctionService.GetActualCost(lotId);
+                if (cost != null) return Ok(cost);
+                else return BadRequest(ModelState);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpGet("comments/{lotId}")]
+        public async Task<IEnumerable<CommentInfo>> GetLotComments(ulong lotId)
+        {
+            return await auctionService.GetLotComments(lotId);
+        }
+
+        [HttpPost("comments/{lotId}")]
+        public async Task<IActionResult> PostCommentAsync(ulong lotId, [FromBody] CommentInfo comment)
+        {
+            if (ModelState.IsValid)
+            {
+                await auctionService.PlaceComment(comment, lotId);
+                return Ok(comment);
+            }
+
+            return BadRequest(ModelState);
+        }
+
         [HttpGet]
-        public async Task<IEnumerable<LotShortInfo>> GetAsync(int pageNumber, ushort category)
+        public async Task<IEnumerable<LotShortInfo>> GetAsync(int pageNumber, int itemsOnPage, ushort category)
         {
             var result = new List<LotShortInfo>();
             if (ModelState.IsValid && pageNumber > 0)
             {
                 var lotsList = await auctionService.GetLotsPage(pageNumber, itemsOnPage, category);
-                foreach ( var lot in lotsList )
+                foreach (var lot in lotsList)
                 {
                     var cost = await auctionService.GetActualCost(lot);
                     result.Add(new LotShortInfo(lot, cost));
@@ -85,6 +114,16 @@ namespace AuctionWebApp.Server.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpGet("image")]
+        public async Task GetImageAsync(string name)
+        {
+            string path = Directory.GetCurrentDirectory() + "\\Data\\Images\\" + name + ".png";
+            //if (System.IO.File.Exists(path))
+            {
+                await HttpContext.Response.SendFileAsync(path);
+            }
         }
     }
 }

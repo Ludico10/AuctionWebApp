@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AuctionWebApp.Server.Data.Dto;
+using System;
 using System.Collections.Generic;
 
 namespace AuctionWebApp.Server.Data.Entities;
@@ -18,4 +19,12 @@ public partial class Comment
     public virtual Lot ComLot { get; set; } = null!;
 
     public virtual User ComUser { get; set; } = null!;
+
+    public Comment(CommentInfo info, ulong lotId)
+    {
+        ComLotId = lotId;
+        ComUserId = info.UserId;
+        ComText = info.Text;
+        ComTime = info.Time;
+    }
 }

@@ -12,6 +12,9 @@ import { SimulationComponent } from './simulation.component';
 import { SimulationUserFormComponent } from './simulation-user-form.component';
 import { GraficoBarrasComponent } from './grafico-barras.component';
 import { CommonModule } from '@angular/common';
+import { HomePageComponent } from './home-page.component';
+import { LotShortComponent } from './lot-short.component';
+import { HeaderComponent } from './header.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +23,9 @@ import { CommonModule } from '@angular/common';
     GraficoBarrasComponent,
     SimulationUserFormComponent,
     SimulationComponent,
+    HomePageComponent,
+    LotShortComponent,
+    HeaderComponent,
     AppComponent
   ],
   imports: [
