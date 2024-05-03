@@ -31,7 +31,7 @@ namespace AuctionWebApp.Server.Services
             {
                 Name = "simulation" + DateTime.Now.ToString(),
                 SellerId = seller.UId,
-                FinishTime = DateTime.Now.AddHours(simulationInfo.CyclesCount),
+                FinishTime = (long)(DateTime.Now.AddHours(simulationInfo.CyclesCount) - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds,
                 AuctionTypeId = simulationInfo.AuctionTypeId,
                 ConditionId = 1,
                 InitialCost = simulationInfo.InitialPrice,

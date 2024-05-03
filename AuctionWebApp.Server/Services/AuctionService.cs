@@ -267,20 +267,44 @@ namespace AuctionWebApp.Server.Services
             return resultCost;
         }
 
-        public async Task<List<Lot>> GetLotsPage(int pageNumber, int lotsOnPage, ushort category)
+        public Dictionary<byte, string> GetSortWays()
+        {
+            return new Dictionary<byte, string>()
+            {
+                { 1, "по возрастанию остатка времени" },
+                { 2, "по убыванию остатка времени" },
+                { 3, "по возрастанию текущей цены" },
+                { 4, "по убыванию текущей цены" },
+                { 5, "по возрастанию времени размещения" },
+                { 6, "по убыванию времени размещения" }
+            };
+        }
+
+        private List<Lot> SortTakeLots(this List<Lot> list, byte sortType)
+        {
+            switch(sortType)
+            {
+                case 1: return [.. list.OrderBy(l => l.LFinishTime)];
+                case 2: return [.. list.OrderByDescending(l => l.LFinishTime)];
+                case 5: return [.. list.OrderBy(l => l.LStartTime)];
+                case 6: return [.. list.OrderByDescending(l => l.LStartTime)];
+                default: return list;
+            }
+        }
+
+        public async Task<List<Lot>> GetLotsPage(CatalogRequest catalogInfo)
         {
             var lots = new List<Lot>();
             var time = DateTime.Now;
-            if (pageNumber == 1)
+            if (catalogInfo.PageNumber == 1)
             {
                 var date = DateOnly.FromDateTime(time);
                 var premiumCategoryLots = await context.LotCategories
-                                            .Where(lc => lc.LcCategoryId == category
+                                            .Where(lc => lc.LcCategoryId == catalogInfo.CategoryId
                                                     && lc.LcPremiumStart != null
                                                     && lc.LcPremiumEnd != null
                                                     && lc.LcPremiumStart <= date
                                                     && lc.LcPremiumEnd >= date)
-                                            .OrderBy(lc => lc.LcPremiumEnd)
                                             .ToListAsync();
                 if (premiumCategoryLots != null)
                     foreach (var categoryLot in premiumCategoryLots)
@@ -320,6 +344,37 @@ namespace AuctionWebApp.Server.Services
             }
 
             return null;
+        }
+
+        public async Task<bool> GetTrackable(ulong lotId, ulong userId)
+        {
+            var trackable = await context.TrackableLots.SingleOrDefaultAsync(tl => tl.TlLotId == lotId && tl.TlUserId == userId);
+            return trackable != null;
+        }
+
+        public async Task ChangeTrackable(ulong lotId, ulong userId, bool isTrackable)
+        {
+            var trackable = await context.TrackableLots.SingleOrDefaultAsync(tl => tl.TlLotId == lotId && tl.TlUserId == userId);
+            if (isTrackable == (trackable != null))
+            {
+                return;
+            }
+
+            if (isTrackable)
+            {
+                await context.TrackableLots.AddAsync(
+                    new TrackableLot()
+                    {
+                        TlLotId = lotId,
+                        TlUserId = userId
+                    });
+            }
+            else
+            {
+                context.TrackableLots.Remove(trackable!);
+            }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task<List<CommentInfo>> GetLotComments(ulong lotId)
@@ -368,6 +423,11 @@ namespace AuctionWebApp.Server.Services
             return await context.Categories
                 .Where(c => c.CId > 0)
                 .ToDictionaryAsync(c => c.CId, c => c.CName);
+        }
+
+        public async Task<Dictionary<byte, string>> GetConditions()
+        {
+            return await context.ItemConditions.ToDictionaryAsync(ic => ic.IcId, ic => ic.IcName);
         }
     }
 }

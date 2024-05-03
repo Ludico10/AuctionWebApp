@@ -26,13 +26,33 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
                 return lot.LInitialCost;
             }
 
-            return lastBid.BSize + lot.LCostStep;
+            return lastBid.BSize;
         }
 
         public async Task<bool> BidCheck(Lot lot, ulong amount, DateTime time, MySqlContext context)
         {
-            var actualCost = await GetActualCost(lot, time, context);
+            var actualCost = await GetActualCost(lot, time, context) + lot.LCostStep;
             return amount >= actualCost;
+        }
+
+        private async Task<TrackableLot> PlaceAutobid(MySqlContext context, ulong lotId, ulong userId, ulong amount)
+        {
+            var trackable = await context.TrackableLots.SingleOrDefaultAsync(tl => tl.TlLotId == lotId && tl.TlUserId == userId);
+            if (trackable != null)
+            {
+                trackable.TlMaxAutomaticBid = amount;
+                return trackable;
+            }
+
+            trackable = new TrackableLot()
+            {
+                TlLotId = lotId,
+                TlUserId = userId,
+                TlMaxAutomaticBid = amount
+            };
+            //сообщение о принятии автоставки
+            await context.TrackableLots.AddAsync(trackable);
+            return trackable;
         }
 
         public async Task<Bid?> AutomaticBid(Lot lot, Bid? lastBid, MySqlContext context, ulong? maxBid = null)
@@ -43,7 +63,7 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
             }
 
             var lotAutomatic = await context.TrackableLots
-                .Where(tl => tl.TlLotId == lot.LId && tl.TlUserId != lastBid.BParticipantId)
+                .Where(tl => tl.TlLotId == lot.LId && tl.TlUserId != lastBid.BParticipantId && tl.TlMaxAutomaticBid != null)
                 .OrderByDescending(tl => tl.TlMaxAutomaticBid)
                 .ToListAsync();
 
@@ -69,21 +89,13 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
             }
             else
             {
-                var trackable = new TrackableLot()
-                {
-                    TlLot = lot,
-                    TlUser = lastBid.BParticipant,
-                    TlMaxAutomaticBid = maxBid.Value
-                };
-                //сообщение о принятии автоставки
-                await context.TrackableLots.AddAsync(trackable);
-
+                var trackable = await PlaceAutobid(context, lot.LId, lastBid.BParticipantId, maxBid.Value);
                 if (lotAutomatic == null || lotAutomatic.Count == 0)
                 {
                     return null;
                 }
 
-                var autoTimes = ((BigInteger)lotAutomatic[0].TlMaxAutomaticBid - lastBid.BSize) / lot.LCostStep;
+                var autoTimes = ((BigInteger)lotAutomatic[0].TlMaxAutomaticBid! - lastBid.BSize) / lot.LCostStep;
                 autoTimes = (autoTimes.IsEven) ? autoTimes-- : autoTimes;
                 var newTimes = ((BigInteger)maxBid - lastBid.BSize) / lot.LCostStep;
                 newTimes = (!autoTimes.IsEven) ? newTimes : newTimes--;

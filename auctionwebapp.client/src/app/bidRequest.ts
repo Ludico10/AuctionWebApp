@@ -3,6 +3,7 @@ export class BidRequest {
     public time?: Date,
     public userId?: number,
     public size?: number,
-    public lotId?: number,
+    public maxSize?: number,
+    public lotId?: number
   ) { }
 }

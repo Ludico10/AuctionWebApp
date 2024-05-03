@@ -1,0 +1,9 @@
+<h2>{{title}}</h2>
+<mat-checkbox [checked]="allCategories" (change)="setAllCategories($event.checked)">
+  Все
+</mat-checkbox>
+@for (cat of categories | keyvalue; track cat; let index = $index) {
+  <mat-checkbox [(ngModel)]="catChecked[index]" (ngModelChange)="updateAllCategories()">
+    {{cat.value}}
+  </mat-checkbox>
+}

@@ -1,4 +1,3 @@
-import { Data } from "@angular/router";
 import { DeliveryInfo } from "./deliveryInfo";
 import { CategoryInfo } from "./categoryInfo";
 
@@ -10,7 +9,7 @@ export class Lot {
     public sellerId: number,
     public sellerName: string,
     public sellerRating: number,
-    public finishTime: Data,
+    public finishTime: number,
     public auctionTypeId: number,
     public auctionTypeName: string,
     public conditionId: number,

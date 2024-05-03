@@ -20,6 +20,8 @@ public partial class Comment
 
     public virtual User ComUser { get; set; } = null!;
 
+    public Comment() { }
+
     public Comment(CommentInfo info, ulong lotId)
     {
         ComLotId = lotId;

@@ -1,0 +1,14 @@
+.global-box {
+    display: flex;
+}
+
+.global-box .filter-part {
+   float: left;
+   width: 15%;
+}
+
+.global-box .list-part {
+    float: right;
+    display: flex;
+    width: 85%;
+}

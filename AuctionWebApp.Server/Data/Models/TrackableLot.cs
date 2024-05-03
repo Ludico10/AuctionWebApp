@@ -9,7 +9,7 @@ public partial class TrackableLot
 
     public ulong TlLotId { get; set; }
 
-    public ulong TlMaxAutomaticBid { get; set; }
+    public ulong? TlMaxAutomaticBid { get; set; }
 
     public virtual Lot TlLot { get; set; } = null!;
 

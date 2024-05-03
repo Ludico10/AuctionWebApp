@@ -48,7 +48,7 @@ public partial class Lot
     {
         LName = lotInfo.Name;
         LDescription = lotInfo.Description;
-        LFinishTime = lotInfo.FinishTime;
+        LFinishTime = new DateTime(1970, 1, 1, 0, 0, 0).AddMilliseconds(lotInfo.FinishTime);
         LConditionId = lotInfo.ConditionId;
         LCondition = condition;
         LInitialCost = lotInfo.InitialCost;

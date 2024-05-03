@@ -12,9 +12,12 @@ import { SimulationComponent } from './simulation.component';
 import { SimulationUserFormComponent } from './simulation-user-form.component';
 import { GraficoBarrasComponent } from './grafico-barras.component';
 import { CommonModule } from '@angular/common';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HomePageComponent } from './home-page.component';
 import { LotShortComponent } from './lot-short.component';
 import { HeaderComponent } from './header.component';
+import { ModalComponent } from './modal.component';
+import { CheckAllComponent } from './check-all.component';
 
 @NgModule({
   declarations: [
@@ -26,12 +29,15 @@ import { HeaderComponent } from './header.component';
     HomePageComponent,
     LotShortComponent,
     HeaderComponent,
+    ModalComponent,
+    CheckAllComponent,
     AppComponent
   ],
   imports: [
     BrowserModule, HttpClientModule,
     AppRoutingModule, FormsModule,
-    MatRadioModule, CommonModule
+    MatRadioModule, CommonModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

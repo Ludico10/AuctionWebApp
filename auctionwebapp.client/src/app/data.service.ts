@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { BidRequest } from './bidRequest'
 import { LotShort } from './lot-short';
 import { Observable } from 'rxjs/internal/Observable';
 import { Lot } from './lot';
 import { CommentInfo } from './commentInfo';
+import { CatalogRequest } from './catalogRequest';
 
 @Injectable()
 export class DataService {
@@ -26,8 +27,16 @@ export class DataService {
     return this.http.get("https://localhost:7183/lists/categories");
   }
 
-  getLotsShort(page: number, count: number, categoryId: number) {
-    return this.http.get<LotShort[]>("https://localhost:7183/lots?pageNumber=" + page + "&itemsOnPage=" + count + "&category=" + categoryId);
+  getConditions() {
+    return this.http.get("https://localhost:7183/lists/conditions");
+  }
+
+  getSortWays() {
+    return this.http.get("https://localhost:7183/lists/sorters");
+  }
+
+  getLotsShort(catalogInfo: CatalogRequest) {
+    return this.http.put<LotShort[]>("https://localhost:7183/lots", catalogInfo);
   }
 
   getLotInfo(id: number) {
@@ -40,6 +49,14 @@ export class DataService {
 
   getLotComments(lotId: number) {
     return this.http.get("https://localhost:7183/lots/comments/" + lotId);
+  }
+
+  getFavorite(lotId: number, userId: number) {
+    return this.http.get<boolean>("https://localhost:7183/lots/track/" + lotId + "?userId=" + userId);
+  }
+
+  placeFavorite(lotId: number, userId: number, trackable: boolean) {
+    return this.http.post("https://localhost:7183/lots/track/" + lotId + "?userId=" + userId, trackable);
   }
 
   placeComment(info: CommentInfo, lotId: number) {

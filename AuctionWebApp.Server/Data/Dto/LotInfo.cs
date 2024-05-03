@@ -10,7 +10,7 @@ namespace AuctionWebApp.Server.Data.Dto
         public ulong SellerId { get; set; }
         public string SellerName { get; set; } = "";
         public int SellerRating { get; set; }
-        public DateTime FinishTime { get; set; }
+        public long FinishTime { get; set; }
         public byte AuctionTypeId { get; set; }
         public string AuctionTypeName { get; set; } = "";
         public byte ConditionId { get; set; }
@@ -32,7 +32,7 @@ namespace AuctionWebApp.Server.Data.Dto
             SellerId = lot.LSellerId;
             SellerName = lot.LSeller.UName;
             SellerRating = lot.LSeller.URating;
-            FinishTime = lot.LFinishTime;
+            FinishTime = (long)(lot.LFinishTime - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds;
             AuctionTypeId = lot.LAuctionType;
             AuctionTypeName = lot.LAuctionTypeNavigation.AtName;
             ConditionId = lot.LConditionId;

@@ -33,6 +33,24 @@ namespace AuctionWebApp.Server.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpGet("track/{lotId}")]
+        public async Task<bool> GetTrackableAsync(ulong lotId, ulong userId)
+        {
+            return await auctionService.GetTrackable(lotId, userId);
+        }
+
+        [HttpPost("track/{lotId}")]
+        public async Task<IActionResult> PostTrackable(ulong lotId, ulong userId, [FromBody] bool trackable)
+        {
+            if (ModelState.IsValid)
+            {
+                await auctionService.ChangeTrackable(lotId, userId, trackable);
+                return Ok(trackable);
+            }
+
+            return BadRequest(ModelState);
+        }
+
         [HttpGet("comments/{lotId}")]
         public async Task<IEnumerable<CommentInfo>> GetLotComments(ulong lotId)
         {
@@ -51,13 +69,13 @@ namespace AuctionWebApp.Server.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<LotShortInfo>> GetAsync(int pageNumber, int itemsOnPage, ushort category)
+        [HttpPut]
+        public async Task<IEnumerable<LotShortInfo>> CatalogAsync(CatalogRequest catalogInfo)
         {
             var result = new List<LotShortInfo>();
-            if (ModelState.IsValid && pageNumber > 0)
+            if (ModelState.IsValid)
             {
-                var lotsList = await auctionService.GetLotsPage(pageNumber, itemsOnPage, category);
+                var lotsList = await auctionService.GetLotsPage(catalogInfo);
                 foreach (var lot in lotsList)
                 {
                     var cost = await auctionService.GetActualCost(lot);

@@ -8,9 +8,10 @@ import { HomePageComponent } from './home-page.component';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },
-  { path: ':id', component: LotDetailComponent },
+  { path: 'lot', component: LotDetailComponent },
+  { path: 'catalog', component: LotListComponent },
   { path: 'simulation', component: SimulationComponent },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: 'catalog' }
 ];
 
 const routerConfig: ExtraOptions = {

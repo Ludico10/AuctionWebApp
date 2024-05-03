@@ -18,5 +18,17 @@ namespace AuctionWebApp.Server.Controllers
         {
             return Json(await auctionService.GetCategories());
         }
+
+        [HttpGet("conditions")]
+        public async Task<JsonResult> GetConditions()
+        {
+            return Json(await auctionService.GetConditions());
+        }
+
+        [HttpGet("sorters")]
+        public Task<JsonResult> GetSortWays()
+        {
+            return Task.FromResult(Json(auctionService.GetSortWays()));
+        }
     }
 }
