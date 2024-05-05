@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { SimulationUser } from "./simulationUser";
+import { SimulationUser } from "../../model/simulationUser";
 
 @Component({
   selector: "simulation-user-form",

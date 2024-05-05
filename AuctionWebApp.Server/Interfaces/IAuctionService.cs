@@ -10,7 +10,7 @@ namespace AuctionWebApp.Server.Interfaces
         public Task AuctionsClosing();
         public Task<ulong> CloseAuction(Lot auction);
         public Dictionary<byte, string> GetSortWays();
-        public Task<List<Lot>> GetLotsPage(int pageNumber, int lotsOnPage, ushort category);
+        public Task<List<(Lot, ulong)>> GetLotsPage(CatalogRequest catalogInfo);
         public Task<ulong> GetActualCost(Lot lot);
         public Task<LotInfo?> GetLotInfo(ulong lotId);
         public Task<Lot?> PlaceLot(LotInfo lotInfo);
@@ -21,7 +21,7 @@ namespace AuctionWebApp.Server.Interfaces
         public Task<bool> GetTrackable(ulong lotId, ulong userId);
         public Task ChangeTrackable(ulong lotId, ulong userId, bool isTrackable);
         public Task<Dictionary<byte, string>> GetAuctionTypes();
-        public Task<Dictionary<ushort, string>> GetCategories();
+        public Task<Dictionary<ushort, string>> GetCategories(bool withAll);
         public Task<Dictionary<byte, string>> GetConditions();
     }
 }

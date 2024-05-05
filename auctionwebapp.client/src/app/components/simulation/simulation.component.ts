@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core";
-import { SimulationService } from "./simulation.service";
-import { SimulationInfo } from "./simulationInfo";
-import { DataService } from "./data.service";
-import { SimulationUser } from "./simulationUser";
-import { GraficoModel } from "./grafico.model";
-import { SimulationResult } from "./simulationResult";
+import { SimulationService } from "../../services/simulation.service";
+import { SimulationInfo } from "../../model/simulationInfo";
+import { DataService } from "../../services/data.service";
+import { SimulationUser } from "../../model/simulationUser";
+import { GraficoModel } from "../../model/grafico.model";
+import { SimulationResult } from "../../model/simulationResult";
 
 @Component({
   templateUrl: './simulation.component.html',

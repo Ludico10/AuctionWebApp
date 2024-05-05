@@ -1,30 +1,42 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { BidRequest } from './bidRequest'
-import { LotShort } from './lot-short';
+import { BidRequest } from '../model/bidRequest'
+import { LotShort } from '../model/lot-short';
 import { Observable } from 'rxjs/internal/Observable';
-import { Lot } from './lot';
-import { CommentInfo } from './commentInfo';
-import { CatalogRequest } from './catalogRequest';
+import { Lot } from '../model/lot';
+import { CommentInfo } from '../model/commentInfo';
+import { CatalogRequest } from '../model/catalogRequest';
+import { TokenApiModel } from '../model/tokenApiModel';
+import { LoginInfo } from '../model/loginInfo';
 
 @Injectable()
 export class DataService {
 
-  private url = "https://localhost:7183/lots/2";
-
   constructor(private http: HttpClient) { }
 
+  login(credentials: LoginInfo) {
+    return this.http.post<TokenApiModel>("https://localhost:7183/users/login", credentials, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    })
+  }
+
+  refreshToken(credentials: string) {
+    return this.http.post<TokenApiModel>("https://localhost:7183/users/refresh", credentials, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+      })
+  }
+
   placeBid(lotId: number, bid: BidRequest) {
-    return this.http.post(this.url, bid);
+    return this.http.post("https://localhost:7183/lots/" + lotId, bid);
   }
 
   getAuctionTypes() {
     return this.http.get("https://localhost:7183/lists/auctionTypes");
   }
 
-  getCategories() {
-    return this.http.get("https://localhost:7183/lists/categories");
+  getCategories(withAll: boolean) {
+    return this.http.get("https://localhost:7183/lists/categories?all=" + withAll);
   }
 
   getConditions() {
@@ -36,7 +48,7 @@ export class DataService {
   }
 
   getLotsShort(catalogInfo: CatalogRequest) {
-    return this.http.put<LotShort[]>("https://localhost:7183/lots", catalogInfo);
+    return this.http.post<LotShort[]>("https://localhost:7183/lots/catalog", catalogInfo);
   }
 
   getLotInfo(id: number) {

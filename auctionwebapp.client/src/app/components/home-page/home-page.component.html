@@ -253,16 +253,15 @@
 <!-- brand section -->
 
 <section class="brand_section">
-  <div class="container">
+  <div class="container" *ngIf="lots.length != 0">
     <div class="heading_container">
       <h2>
         Featured Brands
       </h2>
     </div>
     <div class="brand_container layout_padding2">
-      <lot-short *ngFor="let lot of lastLots; index as i"
-                 [(info)]="lastLots[i]"
-                 [(auctionType)]="lotTypes[i]">
+      <lot-short *ngFor="let lot of lots; index as i"
+                 [(info)]="lots[i]">
       </lot-short>
     </div>
     <a href="" class="brand-btn">

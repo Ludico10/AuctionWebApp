@@ -280,54 +280,107 @@ namespace AuctionWebApp.Server.Services
             };
         }
 
-        private List<Lot> SortTakeLots(this List<Lot> list, byte sortType)
+        private async Task<List<short>> GetActualConditions(CatalogRequest catalogInfo)
         {
-            switch(sortType)
+            var conditionIds = new List<short>();
+            if (catalogInfo.Conditions != null)
             {
-                case 1: return [.. list.OrderBy(l => l.LFinishTime)];
-                case 2: return [.. list.OrderByDescending(l => l.LFinishTime)];
-                case 5: return [.. list.OrderBy(l => l.LStartTime)];
-                case 6: return [.. list.OrderByDescending(l => l.LStartTime)];
-                default: return list;
+                int i = 0;
+                foreach (var cond in catalogInfo.Conditions)
+                {
+                    if (catalogInfo.CondChecked[i])
+                        conditionIds.Add(cond.Key);
+                    i++;
+                }
+
+                return conditionIds;
             }
+
+            var conditions = await context.ItemConditions.ToListAsync();
+            foreach (var cond in conditions)
+            {
+                conditionIds.Add(cond.IcId);
+            }
+
+            return conditionIds;
         }
 
-        public async Task<List<Lot>> GetLotsPage(CatalogRequest catalogInfo)
+        private List<(Lot, ulong)> SortTakeLots(List<(Lot, ulong)> list, CatalogRequest info, int count)
         {
-            var lots = new List<Lot>();
-            var time = DateTime.Now;
-            if (catalogInfo.PageNumber == 1)
+            IOrderedEnumerable<(Lot, ulong)>? order = null;
+            order = info.SelectedSorter switch
             {
-                var date = DateOnly.FromDateTime(time);
-                var premiumCategoryLots = await context.LotCategories
+                1 => list.OrderBy(l => l.Item1.LFinishTime),
+                2 => list.OrderByDescending(l => l.Item1.LFinishTime),
+                3 => list.OrderBy(l => l.Item2),
+                4 => list.OrderByDescending(l => l.Item2),
+                6 => list.OrderByDescending(l => l.Item1.LStartTime),
+                _ => list.OrderBy(l => l.Item1.LStartTime),
+            };
+            return order.Skip((info.PageNumber - 1) * info.ItemsOnPage)
+                   .Take(count)
+                   .ToList();
+        }
+
+        public async Task<List<(Lot, ulong)>> GetLotsPage(CatalogRequest catalogInfo)
+        {
+            catalogInfo.MaxPrice ??= ulong.MaxValue;
+            var conditions = await GetActualConditions(catalogInfo);
+            var lots = new List<(Lot, ulong)>();
+            var time = DateTime.Now;
+            var date = DateOnly.FromDateTime(time);
+            var premiumCategoryLots = await context.LotCategories
                                             .Where(lc => lc.LcCategoryId == catalogInfo.CategoryId
                                                     && lc.LcPremiumStart != null
                                                     && lc.LcPremiumEnd != null
                                                     && lc.LcPremiumStart <= date
                                                     && lc.LcPremiumEnd >= date)
                                             .ToListAsync();
-                if (premiumCategoryLots != null)
-                    foreach (var categoryLot in premiumCategoryLots)
+            if (premiumCategoryLots != null && premiumCategoryLots.Count > (catalogInfo.PageNumber - 1) * catalogInfo.ItemsOnPage)
+            {
+                foreach (var categoryLot in premiumCategoryLots)
+                {
+                    var premiumLot = await context.Lots
+                                           .Where(l => l.LId == categoryLot.LcLotId
+                                                    && l.LName.Contains(catalogInfo.SearchString)
+                                                    && l.LFinishTime >= time
+                                                    && conditions.Contains(l.LConditionId))
+                                           .FirstAsync();
+                    var cost = await GetActualCost(premiumLot);
+                    if (cost >= catalogInfo.MinPrice && cost <= catalogInfo.MaxPrice)
                     {
-                        var premiumLot = await context.Lots
-                                                .Where(l => l.LId == categoryLot.LcLotId
-                                                            && l.LFinishTime >= time)
-                                                .FirstAsync();
-                        lots.Add(premiumLot);
+                        lots.Add((premiumLot, cost));
                     }
+                }
+
+                lots = SortTakeLots(lots, catalogInfo, catalogInfo.ItemsOnPage);
             }
 
-            var usualLots = await context.Lots
-                                    .Where(l => l.LotCategories.Any(lc => lc.LcCategoryId == category)
-                                                && l.LFinishTime >= time
-                                                && !lots.Contains(l))
-                                    .OrderBy(l => l.LFinishTime)
-                                    .Skip((pageNumber - 1) * lotsOnPage)
-                                    .Take(lotsOnPage - lots.Count)
-                                    .ToListAsync();
-            if (usualLots != null)
+            if (lots.Count <= catalogInfo.ItemsOnPage)
             {
-                lots.AddRange(usualLots);
+                var usualLots = await context.Lots
+                                        .Where(l => l.LotCategories.Any(lc => lc.LcCategoryId == catalogInfo.CategoryId)
+                                                    && !lots.Any(lot => lot.Item1.LId == l.LId)
+                                                    && l.LName.Contains(catalogInfo.SearchString)
+                                                    && conditions.Contains(l.LConditionId)
+                                                    && l.LFinishTime >= time)
+                                        .ToListAsync();
+                List<(Lot, ulong)> usualLotCosts = [];
+                if (usualLots != null)
+                {
+                    foreach (var usualLot in usualLots)
+                    {
+                        var cost = await GetActualCost(usualLot);
+                        if (cost >= catalogInfo.MinPrice && cost <= catalogInfo.MaxPrice)
+                        {
+                            usualLotCosts.Add((usualLot, cost));
+                        }
+                    }
+
+                    usualLotCosts = SortTakeLots(usualLotCosts, catalogInfo, catalogInfo.ItemsOnPage - lots.Count);
+                }
+
+                lots.AddRange(usualLotCosts);
             }
 
             return lots;
@@ -418,10 +471,10 @@ namespace AuctionWebApp.Server.Services
             return await context.AuctionTypes.ToDictionaryAsync(at => at.AtId, at => at.AtName);
         }
 
-        public async Task<Dictionary<ushort, string>> GetCategories()
+        public async Task<Dictionary<ushort, string>> GetCategories(bool withAll)
         {
             return await context.Categories
-                .Where(c => c.CId > 0)
+                .Where(c => withAll || c.CId > 0)
                 .ToDictionaryAsync(c => c.CId, c => c.CName);
         }
 

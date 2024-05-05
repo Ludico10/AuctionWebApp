@@ -2,19 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgClass } from "@angular/common";
 
-import { DataService } from './data.service';
-import { BidRequest } from './bidRequest'
-import { Lot } from './lot';
-import { CommentInfo } from './commentInfo';
-import { ModalService } from './modal.service';
+import { DataService } from '../../services/data.service';
+import { BidRequest } from '../../model/bidRequest'
+import { Lot } from '../../model/lot';
+import { CommentInfo } from '../../model/commentInfo';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'lot-page',
   templateUrl: './lot-detail.component.html',
   styleUrls: [
-    '../css/bootstrap.css',
-    '../css/responsive.css',
-    '../css/style.css',
+    '../../../css/bootstrap.css',
+    '../../../css/responsive.css',
+    '../../../css/style.css',
     './lot-detail.component.css'
   ],
   providers: [DataService]

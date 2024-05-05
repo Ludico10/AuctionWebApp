@@ -1,5 +1,6 @@
 ﻿using AuctionWebApp.Server.Data.Dto;
 using AuctionWebApp.Server.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionWebApp.Server.Controllers
@@ -8,7 +9,7 @@ namespace AuctionWebApp.Server.Controllers
     [Route("lots")]
     public class LotsController(IAuctionService auctionService) : Controller
     {
-        [HttpPost("{lotId}")]
+        [HttpPost("{lotId}"), Authorize]
         public async Task<IActionResult> PostAsync([FromBody] BidRequest newBid)
         {
             if (ModelState.IsValid)
@@ -69,8 +70,8 @@ namespace AuctionWebApp.Server.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpPut]
-        public async Task<IEnumerable<LotShortInfo>> CatalogAsync(CatalogRequest catalogInfo)
+        [HttpPost("catalog")]
+        public async Task<IEnumerable<LotShortInfo>> CatalogAsync([FromBody] CatalogRequest catalogInfo)
         {
             var result = new List<LotShortInfo>();
             if (ModelState.IsValid)
@@ -78,8 +79,7 @@ namespace AuctionWebApp.Server.Controllers
                 var lotsList = await auctionService.GetLotsPage(catalogInfo);
                 foreach (var lot in lotsList)
                 {
-                    var cost = await auctionService.GetActualCost(lot);
-                    result.Add(new LotShortInfo(lot, cost));
+                    result.Add(new LotShortInfo(lot.Item1, lot.Item2));
                 }
             }
 

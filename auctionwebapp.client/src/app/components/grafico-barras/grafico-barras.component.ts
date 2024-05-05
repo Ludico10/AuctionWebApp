@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from "@angular/core";
-import { GraficoModel } from "./grafico.model";
+import { GraficoModel } from "../../model/grafico.model";
 
 @Component({
   selector: 'grafico-barras',

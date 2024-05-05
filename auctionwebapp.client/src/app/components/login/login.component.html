@@ -1,0 +1,16 @@
+<div class="container">
+  <form #loginForm="ngForm" (ngSubmit)="login(loginForm)">
+    <h2 class="form-signin-heading">Авторизация</h2>
+    <div *ngIf="invalidLogin" class="alert alert-danger">Неправильный логин или пароль.</div>
+    <br />
+    <label for="email" class="sr-only">Логин</label>
+    <input type="email" id="email" name="email" [(ngModel)]="credentials.email"
+           class="form-control" placeholder="Email" required>
+    <br />
+    <label for="password" class="sr-only">Пароль</label>
+    <input type="password" id="password" name="password" [(ngModel)]="credentials.password"
+           class="form-control" placeholder="Password" required>
+    <br />
+    <button class="btn btn-lg btn-primary" type="submit" [disabled]="!loginForm.valid">войти</button>
+  </form>
+</div>

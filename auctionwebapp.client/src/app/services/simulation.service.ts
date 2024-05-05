@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
-import { SimulationInfo } from "./simulationInfo";
+import { SimulationInfo } from "../model/simulationInfo";
 import { Injectable } from "@angular/core";
-import { SimulationResult } from "./simulationResult";
+import { SimulationResult } from "../model/simulationResult";
 
 @Injectable()
 export class SimulationService {

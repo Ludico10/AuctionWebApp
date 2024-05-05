@@ -10,12 +10,7 @@
       </ng-template>
     </div>
     <div class="detail-box">
-      <div *ngIf="auctionType; else other">
-        <h6>{{auctionType}}</h6>
-      </div>
-      <ng-template #other>
-        <h6>English auction</h6>
-      </ng-template>
+      <h6>{{info.auctionTypeName}}</h6>
       <h6 class="price">
         {{info.currentCost}}$
       </h6>

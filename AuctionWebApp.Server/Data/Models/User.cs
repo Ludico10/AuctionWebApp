@@ -25,6 +25,10 @@ public partial class User
 
     public DateOnly URegistrationDate { get; set; }
 
+    public string? URefreshToken { get; set; }
+
+    public DateTime? URefreshTokenExpiryTime { get; set; }
+
     public virtual ICollection<Answer> Answers { get; set; } = new List<Answer>();
 
     public virtual ICollection<AuctionComplaintSolution> AuctionComplaintSolutions { get; set; } = new List<AuctionComplaintSolution>();

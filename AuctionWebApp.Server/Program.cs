@@ -4,12 +4,15 @@ using AuctionWebApp.Server.Interfaces;
 using AuctionWebApp.Server.Services;
 using Hangfire;
 using Hangfire.MySql;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 var authOptions = new AuthOptions(
-        Issuer: "auction-auth",
-        Audience: "auction-app",
+        Issuer: "https://locathost:7183",
+        Audience: "https://locathost:7183",
         Key: "superSecretKey@34512345678912345",
         Lifetime: TimeSpan.FromMinutes(10)
         );
@@ -19,6 +22,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("AuctionDb");
 builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connectionString, ServerVersion.Parse("8.0.32-mysql")));
+
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = authOptions.Issuer,
+        ValidAudience = authOptions.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOptions.Key))
+    };
+});
 
 builder.Services.AddHangfire(h => h.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                                    .UseSimpleAssemblyNameTypeSerializer()
@@ -41,6 +62,7 @@ builder.Services.AddScoped<IAuctionService, AuctionService>();
 builder.Services.AddScoped<IHashService, HashService>();
 builder.Services.AddScoped<ITokenService, TokenService>(_ => new TokenService(authOptions));
 builder.Services.AddScoped<ISimulationService, SimulationService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -93,6 +115,7 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 app.UseCors("SusloPolicy");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

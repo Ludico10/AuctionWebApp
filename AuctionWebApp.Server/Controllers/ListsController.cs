@@ -14,9 +14,9 @@ namespace AuctionWebApp.Server.Controllers
         }
 
         [HttpGet("categories")]
-        public async Task<JsonResult> GetCategoies()
+        public async Task<JsonResult> GetCategoies(bool all)
         {
-            return Json(await auctionService.GetCategories());
+            return Json(await auctionService.GetCategories(all));
         }
 
         [HttpGet("conditions")]

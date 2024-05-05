@@ -952,6 +952,8 @@ public partial class MySqlContext : DbContext, IDbContext
                 .HasColumnName("u_rating");
             entity.Property(e => e.URegistrationDate).HasColumnName("u_registration_date");
             entity.Property(e => e.URoleId).HasColumnName("u_role_id");
+            entity.Property(e => e.URefreshToken).HasColumnName("u_refresh_token");
+            entity.Property(e => e.URefreshTokenExpiryTime).HasColumnName("u_refresh_token_expiry_time");
 
             entity.HasOne(d => d.UCountry).WithMany(p => p.Users)
                 .HasForeignKey(d => d.UCountryId)

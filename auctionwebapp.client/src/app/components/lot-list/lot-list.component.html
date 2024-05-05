@@ -1,0 +1,37 @@
+<header-section></header-section>
+<div class="global-box">
+  <div class="filter-part">
+    <h3>Текущая цена</h3>
+    <p>От: </p>
+    <input type="number" [(ngModel)]="catalogInfo.minPrice" />
+    <p>До: </p>
+    <input type="number" [(ngModel)]="catalogInfo.maxPrice" />
+    <h3>Категория</h3>
+    <mat-radio-group aria-label="Select an option" [(ngModel)]="catalogInfo.categoryId">
+      <mat-radio-button *ngFor="let cat of categories | keyvalue" [value]="cat.key" [checked]="cat.key == catalogInfo.categoryId">{{cat.value}}</mat-radio-button><br />
+    </mat-radio-group>
+    <check-all [title]="condTitle" [categories]="catalogInfo.conditions!" [catChecked]="catalogInfo.condChecked"></check-all>
+    <h3>Способ сортировки</h3>
+    <mat-radio-group aria-label="Select an option" [(ngModel)]="catalogInfo.selectedSorter">
+      <mat-radio-button *ngFor="let sorter of sorters | keyvalue" [value]="sorter.key" [checked]="sorter.key == catalogInfo.selectedSorter">{{sorter.value}}</mat-radio-button><br />
+    </mat-radio-group>
+    <p>Предметов на странице</p>
+    <mat-radio-group aria-label="Select an option" [(ngModel)]="catalogInfo.itemsOnPage">
+      <mat-radio-button *ngFor="let i of [ 9, 16, 25 ]" [value]="i">{{i}}</mat-radio-button><br />
+    </mat-radio-group>
+    <div>
+      <button type="button" (click)="getItems()">подобрать</button>
+    </div>
+  </div>
+  <div class="list-part">
+    <input type="text" [(ngModel)]="catalogInfo.searchString" />
+    <div *ngIf="lots.length != 0; else noLots">
+      <lot-short *ngFor="let lot of lots; index as i"
+                 [(info)]="lots[i]">
+      </lot-short>
+    </div>
+    <ng-template #noLots>
+      <h3>Нет лотов, удовлетворяющих критериям поиска</h3>
+    </ng-template>
+  </div>
+</div>
