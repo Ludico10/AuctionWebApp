@@ -11,8 +11,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var authOptions = new AuthOptions(
-        Issuer: "https://locathost:7183",
-        Audience: "https://locathost:7183",
+        Issuer: "https://locathost:5234",
+        Audience: "https://locathost:5234",
         Key: "superSecretKey@34512345678912345",
         Lifetime: TimeSpan.FromMinutes(10)
         );
@@ -61,8 +61,11 @@ builder.Services.AddHangfire(h => h.SetDataCompatibilityLevel(CompatibilityLevel
 builder.Services.AddScoped<IAuctionService, AuctionService>();
 builder.Services.AddScoped<IHashService, HashService>();
 builder.Services.AddScoped<ITokenService, TokenService>(_ => new TokenService(authOptions));
-builder.Services.AddScoped<ISimulationService, SimulationService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICatalogService, CatalogService>();
+builder.Services.AddScoped<ICommunicationService, CommunicationService>();
+builder.Services.AddScoped<ILotService, LotService>();
+builder.Services.AddScoped<ISimulationService, SimulationService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

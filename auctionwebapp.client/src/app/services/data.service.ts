@@ -9,73 +9,84 @@ import { CommentInfo } from '../model/commentInfo';
 import { CatalogRequest } from '../model/catalogRequest';
 import { TokenApiModel } from '../model/tokenApiModel';
 import { LoginInfo } from '../model/loginInfo';
+import { RegistrationInfo } from '../model/registrationInfo';
 
 @Injectable()
 export class DataService {
 
+  private url: string = "http://localhost:5234/";
+
   constructor(private http: HttpClient) { }
 
   login(credentials: LoginInfo) {
-    return this.http.post<TokenApiModel>("https://localhost:7183/users/login", credentials, {
+    return this.http.post<TokenApiModel>(this.url + "users/login", credentials, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    })
+  }
+
+  registrate(info: RegistrationInfo) {
+    return this.http.post<TokenApiModel>(this.url + "users/registrate", info, {
       headers: new HttpHeaders({ "Content-Type": "application/json" })
     })
   }
 
   refreshToken(credentials: string) {
-    return this.http.post<TokenApiModel>("https://localhost:7183/users/refresh", credentials, {
+    return this.http.post<TokenApiModel>(this.url + "users/refresh", credentials, {
       headers: new HttpHeaders({ "Content-Type": "application/json" })
       })
   }
 
   placeBid(lotId: number, bid: BidRequest) {
-    return this.http.post("https://localhost:7183/lots/" + lotId, bid);
+    return this.http.post(this.url + "bids", bid);
   }
 
   getAuctionTypes() {
-    return this.http.get("https://localhost:7183/lists/auctionTypes");
+    return this.http.get(this.url + "lists/auctionTypes");
   }
 
   getCategories(withAll: boolean) {
-    return this.http.get("https://localhost:7183/lists/categories?all=" + withAll);
+    return this.http.get(this.url + "lists/categories?all=" + withAll);
   }
 
   getConditions() {
-    return this.http.get("https://localhost:7183/lists/conditions");
+    return this.http.get(this.url + "lists/conditions");
   }
 
   getSortWays() {
-    return this.http.get("https://localhost:7183/lists/sorters");
+    return this.http.get(this.url + "lists/sorters");
   }
 
   getLotsShort(catalogInfo: CatalogRequest) {
-    return this.http.post<LotShort[]>("https://localhost:7183/lots/catalog", catalogInfo);
+    return this.http.put<LotShort[]>(this.url + "lists/catalog", catalogInfo, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    });
   }
 
   getLotInfo(id: number) {
-    return this.http.get<Lot>("https://localhost:7183/lots/" + id);
+    return this.http.get<Lot>(this.url + "lots/" + id);
   }
 
   getCurrentCost(id: number) {
-    return this.http.get<number>("https://localhost:7183/lots/bids/" + id);
+    return this.http.get<number>(this.url + "bids/" + id);
   }
 
   getLotComments(lotId: number) {
-    return this.http.get("https://localhost:7183/lots/comments/" + lotId);
-  }
-
-  getFavorite(lotId: number, userId: number) {
-    return this.http.get<boolean>("https://localhost:7183/lots/track/" + lotId + "?userId=" + userId);
-  }
-
-  placeFavorite(lotId: number, userId: number, trackable: boolean) {
-    return this.http.post("https://localhost:7183/lots/track/" + lotId + "?userId=" + userId, trackable);
+    return this.http.get(this.url + "lots/comments/" + lotId);
   }
 
   placeComment(info: CommentInfo, lotId: number) {
-    return this.http.post("https://localhost:7183/lots/comments/" + lotId, info);
+    return this.http.post(this.url + "lots/comments/" + lotId, info);
   }
 
-  getImage(imageName: string): Observable<Blob> {
-    return this.http.get("https://localhost:7183/lots/image?name=" + imageName, { responseType: 'blob' });
+  getFavorite(lotId: number, userId: number) {
+    return this.http.get<boolean>(this.url + "bids/track/" + lotId + "?userId=" + userId);
+  }
+
+  placeFavorite(lotId: number, userId: number, trackable: boolean) {
+    return this.http.post(this.url + "bids/track/" + lotId + "?userId=" + userId, trackable);
+  }
+
+  getImage(imageName: string, imageType: string): Observable<Blob> {
+    return this.http.get(this.url + "images/" + imageType + "?name=" + imageName, { responseType: 'blob' });
   }
 }

@@ -1,5 +1,6 @@
 ﻿using AuctionWebApp.Server.Data;
 using AuctionWebApp.Server.Data.Dto;
+using AuctionWebApp.Server.Data.Entities;
 using AuctionWebApp.Server.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -32,6 +33,21 @@ namespace AuctionWebApp.Server.Services
                 AccessToken = accessToken,
                 RefreshToken = refreshToken
             };
+        }
+
+        public async Task<bool> Registration(RegistrationInfo registrationInfo)
+        {
+            try
+            {
+                var user = new User(registrationInfo);
+                await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<TokenApiModel?> RefreshToken(TokenApiModel tokenApiModel)

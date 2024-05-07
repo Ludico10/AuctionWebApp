@@ -27,9 +27,25 @@ namespace AuctionWebApp.Server.Controllers
         }
 
         [HttpPost("registrate")]
-        public IActionResult RegistrateAsync([FromBody] LoginInfo registrationInfo)
+        public async Task<IActionResult> RegistrateAsync([FromBody] RegistrationInfo registrationInfo)
         {
-            return BadRequest();
+            if (!ModelState.IsValid || await userService.Registration(registrationInfo))
+            {
+                return BadRequest();
+            }
+
+            var loginModel = new LoginInfo()
+            {
+                Email = registrationInfo.Email,
+                Password = registrationInfo.PasswordHash
+            };
+            var tokens = await userService.Login(loginModel);
+            if (tokens is null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(tokens);
         }
 
         [HttpPost("refresh")]
@@ -50,7 +66,7 @@ namespace AuctionWebApp.Server.Controllers
         }
 
         [HttpPost("revoke"), Authorize]
-        public async Task<IActionResult> RevokAsynce()
+        public async Task<IActionResult> RevokeAsynce()
         {
             if (!ModelState.IsValid || User.Identity is null)
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AuctionWebApp.Server.Data.Dto;
+using System;
 using System.Collections.Generic;
 
 namespace AuctionWebApp.Server.Data.Entities;
@@ -58,4 +59,18 @@ public partial class User
     public virtual Role URole { get; set; } = null!;
 
     public virtual ICollection<UserReaction> UserReactions { get; set; } = new List<UserReaction>();
+
+    public User() { }
+
+    public User(RegistrationInfo info)
+    {
+        UName = info.Name;
+        URating = 10;
+        URoleId = 2;
+        UCountryId = 4;
+        UAddress = info.Address;
+        UEmail = info.Email;
+        UPasswordHash = info.PasswordHash;
+        URegistrationDate = DateOnly.FromDateTime(DateTime.Now);
+    }
 }

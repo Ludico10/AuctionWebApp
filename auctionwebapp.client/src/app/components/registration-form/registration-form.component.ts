@@ -1,0 +1,40 @@
+import { Component, OnInit } from "@angular/core";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Router } from "@angular/router";
+
+import { DataService } from "../../services/data.service";
+import { RegistrationInfo } from "../../model/registrationInfo";
+import { TokenApiModel } from "../../model/tokenApiModel";
+
+@Component({
+  selector: 'app-registration',
+  templateUrl: './registration-form.component.html',
+  providers: [DataService]
+})
+
+export class LoginComponent implements OnInit {
+
+  info: RegistrationInfo = new RegistrationInfo;
+  passwordCheck: string = "";
+  invalidParams: boolean = true;
+
+  constructor(private dataService: DataService, private router: Router) { }
+
+  ngOnInit() { }
+
+  save() {
+    if (this.info.name && this.info.email && this.info.passwordHash && this.info.passwordHash == this.passwordCheck) {
+      this.dataService.registrate(this.info).subscribe({
+        next: (response: TokenApiModel) => {
+          const token = response.accessToken;
+          const refreshToken = response.refreshToken;
+          localStorage.setItem("jwt", token);
+          localStorage.setItem("refreshToken", refreshToken);
+          this.invalidParams = false;
+          this.router.navigate(["/"]);
+        },
+        error: (err: HttpErrorResponse) => this.invalidParams = true
+      });
+    }
+  }
+}
