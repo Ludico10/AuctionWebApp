@@ -1,3 +1,5 @@
+@import '../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css';
+
 :root {
   --color-primary: #a4d8f1;
   --color-header: #7cb1da;
@@ -16,3 +18,6 @@
   --color-button-hover-color: #4ac1d5;
   --color-list-border-color: #3f4a4c;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

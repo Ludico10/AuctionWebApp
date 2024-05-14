@@ -12,7 +12,7 @@ import { TokenApiModel } from "../../model/tokenApiModel";
   providers: [DataService]
 })
 
-export class LoginComponent implements OnInit {
+export class RegistrationComponent implements OnInit {
 
   info: RegistrationInfo = new RegistrationInfo;
   passwordCheck: string = "";

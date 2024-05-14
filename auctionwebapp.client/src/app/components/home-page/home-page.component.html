@@ -109,7 +109,7 @@
             <div class="tab_container">
               @for (cat of categories | keyvalue; track cat; let index = $index) {
               <div class="t-link-box" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
-                   aria-controls="collapseOne" *ngIf="index<4">
+                   aria-controls="collapseOne" *ngIf="index<4" (click)="categoryClick(cat.key)">
                 <div class="number">
                   <h5>
                     {{index + 1}}
@@ -131,85 +131,22 @@
             <div class="img_container ">
               <div class="box b-1">
                 <div class="img-box">
-                  <img src="../assets/images/t-1.jpg" alt="">
+                  <img src="../assets/images/{{activeCategory}}-1.png" alt="">
                 </div>
                 <div class="img-box">
-                  <img src="../assets/images/t-2.jpg" alt="">
+                  <img src="../assets/images/{{activeCategory}}-2.png" alt="">
                 </div>
               </div>
               <div class="box b-2">
                 <div class="img-box">
-                  <img src="../assets/images/t-3.jpg" alt="">
+                  <img src="../assets/images/{{activeCategory}}-3.png" alt="">
                 </div>
                 <div class="img-box">
-                  <img src="../assets/images/t-4.jpg" alt="">
+                  <img src="../assets/images/{{activeCategory}}-4.png" alt="">
                 </div>
               </div>
             </div>
           </div>
-          <div class="collapse" id="collapseTwo" aria-labelledby="headingTwo" data-parent="#accordion">
-            <div class="img_container ">
-              <div class="box b-1">
-                <div class="img-box">
-                  <img src="../assets/images/t-3.jpg" alt="">
-                </div>
-                <div class="img-box">
-                  <img src="../assets/images/t-4.jpg" alt="">
-                </div>
-              </div>
-              <div class="box b-2">
-
-                <div class="img-box">
-                  <img src="../assets/images/t-1.jpg" alt="">
-                </div>
-                <div class="img-box">
-                  <img src="../assets/images/t-2.jpg" alt="">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="collapse" id="collapseThree" aria-labelledby="headingThree" data-parent="#accordion">
-            <div class="img_container ">
-              <div class="box b-1">
-                <div class="img-box">
-                  <img src="../assets/images/t-4.jpg" alt="">
-                </div>
-                <div class="img-box">
-                  <img src="../assets/images/t-1.jpg" alt="">
-                </div>
-              </div>
-              <div class="box b-2">
-                <div class="img-box">
-                  <img src="../assets/images/t-3.jpg" alt="">
-                </div>
-                <div class="img-box">
-                  <img src="../assets/images/t-2.jpg" alt="">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="collapse" id="collapseFour" aria-labelledby="headingfour" data-parent="#accordion">
-            <div class="img_container ">
-              <div class="box b-1">
-                <div class="img-box">
-                  <img src="../assets/images/t-1.jpg" alt="">
-                </div>
-
-                <div class="img-box">
-                  <img src="../assets/images/t-4.jpg" alt="">
-                </div>
-              </div>
-              <div class="box b-2">
-                <div class="img-box">
-                  <img src="../assets/images/t-3.jpg" alt="">
-                </div>
-                <div class="img-box">
-                  <img src="../assets/images/t-2.jpg" alt="">
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>

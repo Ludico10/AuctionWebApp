@@ -10,7 +10,7 @@ namespace AuctionWebApp.Server.Interfaces
         public Task<ulong> GetActualCost(Lot lot);
         public Task AuctionsClosing();
         public Task<ulong> CloseAuction(Lot auction);
-        public Task<bool> GetTrackable(ulong lotId, ulong userId);
+        public Task<bool> IsTrackable(ulong lotId, ulong userId);
         public Task ChangeTrackable(ulong lotId, ulong userId, bool isTrackable);
     }
 }

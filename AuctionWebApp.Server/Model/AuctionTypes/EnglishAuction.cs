@@ -121,7 +121,8 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
                 if (item.TlMaxAutomaticBid < amount + lot.LCostStep)
                 {
                     //уведомить владельца о окончании автоматического повышения ставки
-                    context.TrackableLots.Remove(item);
+                    //context.TrackableLots.Remove(item);
+                    item.TlMaxAutomaticBid = 0;
                 }
             }
 

@@ -9,5 +9,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\app\components\registration-form\" />
+    <Folder Include="src\app\components\lot-create\" />
   </ItemGroup>
 </Project>

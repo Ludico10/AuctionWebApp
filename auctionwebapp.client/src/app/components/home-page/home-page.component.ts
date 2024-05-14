@@ -17,6 +17,7 @@ import { CatalogRequest } from "../../model/catalogRequest";
 export class HomePageComponent implements OnInit {
 
   categories: Map<number, string> = new Map();
+  activeCategory: number = 1;
   lots: LotShort[] = [];
 
   constructor(private dataService: DataService) { }
@@ -27,7 +28,10 @@ export class HomePageComponent implements OnInit {
     }
 
   getPopularCategories() {
-    this.dataService.getCategories(false).subscribe((data: any) => this.categories = data as typeof this.categories);
+    this.dataService.getCategories(false).subscribe((data: any) => {
+      this.categories = data as typeof this.categories;
+
+    });
   }
 
   getLastLots() {
@@ -35,7 +39,13 @@ export class HomePageComponent implements OnInit {
     info.itemsOnPage = 3;
     this.dataService.getLotsShort(info).subscribe((data: LotShort[]) => {
       this.lots = data;
+      if (this.lots.length > 0) {
+        this.lots.shift();
+      }
     });
+  }
 
+  categoryClick(key: number) {
+    this.activeCategory = key;
   }
 }

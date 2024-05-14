@@ -97,7 +97,7 @@ namespace AuctionWebApp.Server.Services
             return resultCost;
         }
 
-        public async Task<bool> GetTrackable(ulong lotId, ulong userId)
+        public async Task<bool> IsTrackable(ulong lotId, ulong userId)
         {
             var trackable = await context.TrackableLots.SingleOrDefaultAsync(tl => tl.TlLotId == lotId && tl.TlUserId == userId);
             return trackable != null;

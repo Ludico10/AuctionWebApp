@@ -9,6 +9,14 @@
 
 .global-box .list-part {
     float: right;
-    display: flex;
     width: 85%;
 }
+
+  .global-box .list-part .list-box {
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }

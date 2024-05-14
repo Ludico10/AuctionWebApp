@@ -37,7 +37,7 @@ namespace AuctionWebApp.Server.Controllers
         [HttpGet("track/{lotId}")]
         public async Task<bool> GetTrackableAsync(ulong lotId, ulong userId)
         {
-            return await auctionService.GetTrackable(lotId, userId);
+            return await auctionService.IsTrackable(lotId, userId);
         }
 
         [HttpPost("track/{lotId}")]

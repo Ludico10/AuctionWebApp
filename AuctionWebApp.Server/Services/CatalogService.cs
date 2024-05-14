@@ -25,29 +25,45 @@ namespace AuctionWebApp.Server.Services
             return await context.ItemConditions.ToDictionaryAsync(ic => ic.IcId, ic => ic.IcName);
         }
 
-        private async Task<List<short>> GetActualConditions(CatalogRequest catalogInfo)
+        public async Task<Dictionary<ushort, string>> GetDeliveries()
         {
-            var conditionIds = new List<short>();
-            if (catalogInfo.Conditions != null)
-            {
-                int i = 0;
-                foreach (var cond in catalogInfo.Conditions)
-                {
-                    if (catalogInfo.CondChecked[i])
-                        conditionIds.Add(cond.Key);
-                    i++;
-                }
+            return await context.Countries.ToDictionaryAsync(c => c.CouId, c => c.CouName);
+        }
 
-                return conditionIds;
-            }
+        private async Task<List<byte>> GetActualConditions(CatalogRequest catalogInfo)
+        {
+            var conditionIds = new List<byte>();
+            var all = catalogInfo.Conditions is null;
+            if (all)
+                catalogInfo.Conditions = await GetConditions();
 
-            var conditions = await context.ItemConditions.ToListAsync();
-            foreach (var cond in conditions)
+            int i = 0;
+            foreach (var cond in catalogInfo.Conditions!)
             {
-                conditionIds.Add(cond.IcId);
+                if (all || catalogInfo.CondChecked[i])
+                    conditionIds.Add(cond.Key);
+                i++;
             }
 
             return conditionIds;
+        }
+
+        private async Task<List<byte>> GetActualTypes(CatalogRequest catalogInfo)
+        {
+            var typeIds = new List<byte>();
+            var all = catalogInfo.AuctionTypes is null;
+            if (all)
+                catalogInfo.AuctionTypes = await GetAuctionTypes();
+
+            int i = 0;
+            foreach (var type in catalogInfo.AuctionTypes!)
+            {
+                if (all || catalogInfo.TypeChecked[i])
+                    typeIds.Add(type.Key);
+                i++;
+            }
+
+            return typeIds;
         }
 
         public Dictionary<byte, string> GetSortWays()
@@ -63,7 +79,7 @@ namespace AuctionWebApp.Server.Services
             };
         }
 
-        private List<(Lot, ulong)> SortTakeLots(List<(Lot, ulong)> list, CatalogRequest info, int count)
+        private List<(Lot, ulong)> SortTakeLots(List<(Lot, ulong)> list, CatalogRequest info, int skiped, int taked)
         {
             IOrderedEnumerable<(Lot, ulong)>? order = null;
             order = info.SelectedSorter switch
@@ -75,51 +91,55 @@ namespace AuctionWebApp.Server.Services
                 6 => list.OrderByDescending(l => l.Item1.LStartTime),
                 _ => list.OrderBy(l => l.Item1.LStartTime),
             };
-            return order.Skip((info.PageNumber - 1) * info.ItemsOnPage)
-                   .Take(count)
+            return order.Skip((info.PageNumber - 1) * info.ItemsOnPage - skiped)
+                   .Take(info.ItemsOnPage - taked)
                    .ToList();
         }
 
-        public async Task<List<(Lot, ulong)>> GetLotsPage(CatalogRequest catalogInfo)
+        public async Task<(List<(Lot, ulong)>, int)> GetLotsPage(CatalogRequest catalogInfo)
         {
             catalogInfo.MaxPrice ??= ulong.MaxValue;
             var conditions = await GetActualConditions(catalogInfo);
+            var types = await GetActualTypes(catalogInfo);
             var lots = new List<(Lot, ulong)>();
             var time = DateTime.Now;
             var date = DateOnly.FromDateTime(time);
-            var premiumCategoryLots = await context.LotCategories
+            var premiumCategoryLots = new List<LotCategory>();
+            premiumCategoryLots = await context.LotCategories
                                             .Where(lc => lc.LcCategoryId == catalogInfo.CategoryId
                                                     && lc.LcPremiumStart != null
                                                     && lc.LcPremiumEnd != null
                                                     && lc.LcPremiumStart <= date
                                                     && lc.LcPremiumEnd >= date)
                                             .ToListAsync();
-            if (premiumCategoryLots != null && premiumCategoryLots.Count > (catalogInfo.PageNumber - 1) * catalogInfo.ItemsOnPage)
+            foreach (var categoryLot in premiumCategoryLots)
             {
-                foreach (var categoryLot in premiumCategoryLots)
-                {
-                    var premiumLot = await context.Lots
+                var premiumLot = await context.Lots
                                            .Where(l => l.LId == categoryLot.LcLotId
                                                     && l.LName.Contains(catalogInfo.SearchString)
                                                     && l.LFinishTime >= time
+                                                    && types.Contains(l.LAuctionType)
                                                     && conditions.Contains(l.LConditionId))
-                                           .FirstAsync();
+                                           .SingleOrDefaultAsync();
+                if (premiumLot != null)
+                {
                     var cost = await auctionService.GetActualCost(premiumLot);
                     if (cost >= catalogInfo.MinPrice && cost <= catalogInfo.MaxPrice)
                     {
                         lots.Add((premiumLot, cost));
                     }
                 }
-
-                lots = SortTakeLots(lots, catalogInfo, catalogInfo.ItemsOnPage);
             }
+
+            int count = lots.Count;
+            lots = SortTakeLots(lots, catalogInfo, 0, 0);
 
             if (lots.Count <= catalogInfo.ItemsOnPage)
             {
                 var usualLots = await context.Lots
                                         .Where(l => l.LotCategories.Any(lc => lc.LcCategoryId == catalogInfo.CategoryId)
-                                                    && !lots.Any(lot => lot.Item1.LId == l.LId)
                                                     && l.LName.Contains(catalogInfo.SearchString)
+                                                    && types.Contains(l.LAuctionType)
                                                     && conditions.Contains(l.LConditionId)
                                                     && l.LFinishTime >= time)
                                         .ToListAsync();
@@ -128,20 +148,107 @@ namespace AuctionWebApp.Server.Services
                 {
                     foreach (var usualLot in usualLots)
                     {
-                        var cost = await auctionService.GetActualCost(usualLot);
-                        if (cost >= catalogInfo.MinPrice && cost <= catalogInfo.MaxPrice)
+                        if (!lots.Any(lot => lot.Item1.LId == usualLot.LId))
                         {
-                            usualLotCosts.Add((usualLot, cost));
+                            var cost = await auctionService.GetActualCost(usualLot);
+                            if (cost >= catalogInfo.MinPrice && cost <= catalogInfo.MaxPrice)
+                            {
+                                usualLotCosts.Add((usualLot, cost));
+                            }
                         }
                     }
 
-                    usualLotCosts = SortTakeLots(usualLotCosts, catalogInfo, catalogInfo.ItemsOnPage - lots.Count);
+                    count += usualLots.Count;
+                    usualLotCosts = SortTakeLots(usualLotCosts, catalogInfo, premiumCategoryLots.Count, lots.Count);
                 }
 
                 lots.AddRange(usualLotCosts);
             }
 
-            return lots;
+            return (lots, count);
+        }
+
+        public async Task<List<(Bid, ulong)>> GetLotsWithBids(ulong userId, int itemsOnPage, int pageNumber)
+        {
+            var result = new List<(Bid, ulong)>();
+            var bids = await context.Bids
+                                    .Where(b => b.BParticipantId == userId)
+                                    .OrderByDescending(b => b.BTime)
+                                    .ToListAsync();
+            if (bids != null)
+            {
+                int skipCount = (pageNumber - 1) * itemsOnPage;
+                int takeCount = 0;
+                foreach (var bid in bids)
+                {
+                    var lot = bid.BLot;
+                    if (!result.Any(r => r.Item1.BLot == lot))
+                    {
+                        if (skipCount <= 0 && takeCount < itemsOnPage)
+                        {
+                            var cost = await auctionService.GetActualCost(lot);
+                            result.Add((bid, cost));
+                            takeCount++;
+                        }
+                        skipCount--;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<List<(TrackableLot, ulong)>> GetTrackableLots(ulong userId, int itemsOnPage, int pageNumber)
+        {
+            var result = new List<(TrackableLot, ulong)>();
+            var trackableLots = await context.TrackableLots
+                                             .Where(tl => tl.TlUserId == userId)
+                                             .OrderBy(tl => tl.TlLot.LFinishTime)
+                                             .Skip((pageNumber - 1) * itemsOnPage)
+                                             .Take(itemsOnPage)
+                                             .ToListAsync();
+            if (trackableLots != null)
+            {
+                foreach (var trackable in trackableLots)
+                {
+                    var cost = await auctionService.GetActualCost(trackable.TlLot);
+                    result.Add((trackable, cost));
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<List<(Lot, ulong)>> GetUserActualLots(ulong userId, int itemsOnPage, int pageNumber)
+        {
+            var result = new List<(Lot, ulong)>();
+            var lots = await context.Lots
+                                    .Where(l => l.LSellerId == userId)
+                                    .OrderBy(l => l.LFinishTime)
+                                    .Skip((pageNumber - 1) * itemsOnPage)
+                                    .Take(itemsOnPage)
+                                    .ToListAsync();
+            if (lots != null)
+            {
+                foreach(var lot in lots)
+                {
+                    var cost = await auctionService.GetActualCost(lot);
+                    result.Add((lot, cost));
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<List<FinishedAuction>> GetUserFinishedLots(ulong userId, bool isWinner, int itemsOnPage, int pageNumber)
+        {
+            return await context.FinishedAuctions
+                                .Where(fa => (isWinner && fa.FaWinnerId == userId)
+                                          || (!isWinner && fa.FaSellerId == userId))
+                                .OrderByDescending(fa => fa.FaStateUpdateTime)
+                                .Skip((pageNumber - 1) * itemsOnPage)
+                                .Take(itemsOnPage)
+                                .ToListAsync();
         }
     }
 }

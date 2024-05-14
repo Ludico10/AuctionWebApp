@@ -1,6 +1,6 @@
 <div class="container">
   <h2 class="form-signin-heading">Регистрация</h2>
-  <div *ngIf="invalidLogin" class="alert alert-danger">Введенные данные невалидны.</div>
+  <div *ngIf="invalidParams" class="alert alert-danger">Введенные данные невалидны.</div>
   <br />
   <label for="name" class="sr-only">Никнейм</label>
   <input type="text" id="name" name="name" [(ngModel)]="info.name"
@@ -15,11 +15,7 @@
          class="form-control" placeholder="Address" required>
   <br />
   <label for="password" class="sr-only">Пароль</label>
-  <input type="password" id="password" name="password" [(ngModel)]="credentials.password"
-         class="form-control" placeholder="Password" required>
-  <br />
-  <label for="password" class="sr-only">Пароль</label>
-  <input type="password" id="password" name="password" [(ngModel)]="credentials.password"
+  <input type="password" id="password" name="password" [(ngModel)]="info.passwordHash"
          class="form-control" placeholder="Password" required>
   <br />
   <label for="passwordCheck" class="sr-only">Подтверждение пароля</label>

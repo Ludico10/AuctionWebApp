@@ -4,7 +4,7 @@ import { NgClass } from "@angular/common";
 
 import { DataService } from '../../services/data.service';
 import { BidRequest } from '../../model/bidRequest'
-import { Lot } from '../../model/lot';
+import { LotInfo } from '../../model/lotInfo';
 import { CommentInfo } from '../../model/commentInfo';
 import { ModalService } from '../../services/modal.service';
 
@@ -30,11 +30,16 @@ export class LotDetailComponent implements OnInit {
   intervalId: any;
 
   bid: BidRequest = new BidRequest();
-  lot?: Lot;
+  lot?: LotInfo;
   currentCost: number = 1;
   isFavorite: boolean = false;
   comments: Array<CommentInfo> = [];
   newComment = new CommentInfo(3, this.time);
+
+  images: Map<number, any> = new Map<number, any>();
+  mainId: number = 0;
+  comAvatars: Map<number, any> = new Map<number, any>();
+  sellerAvatar: Map<number, any> = new Map<number, any>();
 
   constructor(private dataService: DataService, protected modalService: ModalService, private router: Router, activeRoute: ActivatedRoute) {
     this.bid.lotId = Number.parseInt(activeRoute.snapshot.queryParams["id"]);
@@ -53,18 +58,70 @@ export class LotDetailComponent implements OnInit {
         this.minsBefore = totalMins - totalHours * 60;
         let totalSecs = Math.floor(timeBefore / 1000);
         this.secsBefore = totalSecs - totalMins * 60;
-        //if (this.secsBefore == 0) {
+        if (this.secsBefore == 0) {
           this.dataService.getCurrentCost(this.bid.lotId!).subscribe((data: number) => this.currentCost = data);
-        //}
+        }
       }
     }, 1000);
 
     if (this.bid.lotId) {
-      this.dataService.getLotInfo(this.bid.lotId).subscribe((data: Lot) => this.lot = data);
+      this.dataService.getLotInfo(this.bid.lotId).subscribe((data: LotInfo) => {
+        this.lot = data;
+        if (this.lot) {
+          this.dataService.getImage(this.lot.sellerId.toString(), "users").subscribe({
+            next: (image: any) => {
+              this.createImageFromBlob(this.sellerAvatar, this.lot!.sellerId, image);
+            },
+            error: () => { }
+          });
+        }
+      });
       this.dataService.getCurrentCost(this.bid.lotId).subscribe((data: number) => this.currentCost = data);
-      this.dataService.getLotComments(this.bid.lotId).subscribe((data: any) => this.comments = data as typeof this.comments);
+      this.dataService.getLotComments(this.bid.lotId).subscribe((data: any) => {
+        this.comments = data as typeof this.comments;
+        this.comments.forEach(com => {
+          this.dataService.getImage(com.userId.toString(), "users").subscribe({
+            next: (image: any) => {
+              this.createImageFromBlob(this.comAvatars, com.userId, image);
+            },
+            error: () => { }
+          });
+        });
+      });
       this.dataService.getFavorite(this.bid.lotId!, this.bid.userId!).subscribe((data: boolean) => this.isFavorite = data);
+      for (let i = 0; i < 5; i++) {
+        this.dataService.getImage(this.bid.lotId + "-" + i, "actual").subscribe({
+          next: (data: any) => {
+            this.createImageFromBlob(this.images, i, data);
+          },
+          error: () => { }
+        });
+      }
     }
+  }
+
+  createImageFromBlob(collection: Map<number, any>, i: number, image: Blob) {
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+      collection.set(i, reader.result);
+    }, false);
+
+    if (image) {
+      reader.readAsDataURL(image);
+    }
+  }
+
+  selectImage(i: number) {
+    this.mainId = i;
+  }
+
+  onMouseEnter(hoverName: HTMLElement) {
+    hoverName.style.border = "1px";
+    hoverName.style.borderStyle = "solid";
+  }
+
+  onMouseOut(hoverName: HTMLElement) {
+    hoverName.style.border = "0px";
   }
 
   favoriteClick() {

@@ -40,11 +40,12 @@ export class LotShortComponent implements OnInit {
 
   getImageFromService() {
     this.isImageLoading = true;
-    this.dataService.getImage(this.info.name, "actual").subscribe(data => {
-      this.createImageFromBlob(data);
-      this.isImageLoading = false;
-    }, error => {
-      console.log(error);
+    this.dataService.getImage(this.info.lotId + "-0", "actual").subscribe({
+      next: data => {
+        this.createImageFromBlob(data);
+        this.isImageLoading = false;
+      },
+      error: (error: any) => { console.log(error) }
     });
   }
 }

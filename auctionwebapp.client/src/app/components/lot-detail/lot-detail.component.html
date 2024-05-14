@@ -3,7 +3,21 @@
 </div>
 <div class="info-box">
   <div class="left-part">
-    <img class="img" src="../assets/images/slider-img.png" />
+    <img class="img" alt="" *ngIf="images.size > mainId; else ImageNotFound" [src]="images.get(mainId)"/>
+    <ng-template #ImageNotFound>
+      <img class="img" src="../assets/images/slider-img.png" />
+    </ng-template>
+    <div class="gallery">
+      <ul>
+        @for (i of [0, 1, 2, 3, 4]; track i) {
+        <li class="minthmbheiht" *ngIf="images.size > i" >
+          <div #hoverName (click)="selectImage(i)" (mouseover)="onMouseEnter(hoverName)" (mouseleave)="onMouseOut(hoverName)">
+            <img class="cstm-img-center" alt="" [src]="images.get(i)" />
+          </div>
+        </li>
+        }
+      </ul>
+    </div>
   </div>
   <div class="right-part">
     <h1 class="title">{{lot!.name}}</h1>
@@ -15,7 +29,10 @@
     <h6>Состояние: {{lot!.conditionName}}</h6>
 
     <div class="user-box">
-      <img src="../assets/images/client-1.png" />
+      <img *ngIf="sellerAvatar.size !== 0; else NotFound" [src]="sellerAvatar.get(lot!.sellerId)" />
+      <ng-template #NotFound>
+        <img src="../assets/images/client-1.png" />
+      </ng-template>
       <div class="info">
         <h3 class="name">{{lot!.sellerName}}</h3>
         <div class="rating-box">
@@ -105,16 +122,19 @@
 </div>
 <div>
   <h1>Комментарии</h1>
-  <div *ngIf="comments.length != 0; else noComments">
+  <div *ngIf="comments.length != 0; else NoComments">
     <div *ngFor="let com of comments" style="comment-box">
-      <img src="../assets/images/client-2.png" />
+      <img *ngIf="comAvatars.has(com.userId); else AvaNotFound" [src]="comAvatars.get(com.userId)" />
+      <ng-template #AvaNotFound>
+        <img src="../assets/images/client-2.png" />
+      </ng-template>
       <div style="info">
         <h5>{{com.userName}}  {{com.time | date: 'hh:mm:ss a' }}</h5>
         <div>{{com.text}}</div>
       </div>
     </div>
   </div>
-  <ng-template #noComments>
+  <ng-template #NoComments>
     Здесь пока нет комментариев
   </ng-template>
   <div>

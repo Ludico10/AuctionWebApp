@@ -8,7 +8,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
+  templateUrl: './login-form.component.html',
   providers: [DataService]
 })
 

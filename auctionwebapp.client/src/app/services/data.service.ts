@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { BidRequest } from '../model/bidRequest'
 import { LotShort } from '../model/lot-short';
 import { Observable } from 'rxjs/internal/Observable';
-import { Lot } from '../model/lot';
+import { LotInfo } from '../model/lotInfo';
 import { CommentInfo } from '../model/commentInfo';
 import { CatalogRequest } from '../model/catalogRequest';
 import { TokenApiModel } from '../model/tokenApiModel';
@@ -52,6 +52,10 @@ export class DataService {
     return this.http.get(this.url + "lists/conditions");
   }
 
+  getDeliveries() {
+    return this.http.get(this.url + "lists/deliveries");
+  }
+
   getSortWays() {
     return this.http.get(this.url + "lists/sorters");
   }
@@ -63,7 +67,7 @@ export class DataService {
   }
 
   getLotInfo(id: number) {
-    return this.http.get<Lot>(this.url + "lots/" + id);
+    return this.http.get<LotInfo>(this.url + "lots/" + id);
   }
 
   getCurrentCost(id: number) {
