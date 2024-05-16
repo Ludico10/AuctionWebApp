@@ -20,6 +20,12 @@ namespace AuctionWebApp.Server.Controllers
             return Json(await catalogService.GetCategories(all));
         }
 
+        [HttpGet("categories/premium")]
+        public async Task<IEnumerable<PremiumInfo>> GetPremiumInfosAsync()
+        {
+            return await catalogService.GetPremiumCategories();
+        }
+
         [HttpGet("conditions")]
         public async Task<JsonResult> GetConditionsAsync()
         {

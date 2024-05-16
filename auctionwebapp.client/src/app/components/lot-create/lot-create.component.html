@@ -7,7 +7,7 @@
 <ngx-material-timepicker #fullTime></ngx-material-timepicker>
 <mat-form-field>
   <mat-label>Choose a date</mat-label>
-  <input [matDatepicker]="final">
+  <input matInput [matDatepicker]="final">
   <mat-hint>MM/DD/YYYY</mat-hint>
   <mat-datepicker-toggle matIconSuffix [for]="final"></mat-datepicker-toggle>
   <mat-datepicker #final></mat-datepicker>
@@ -47,6 +47,7 @@
     <th>Название</th>
     <th>Начало премиума</th>
     <th>Конец премиума</th>
+    <th>Стоимость</th>
     <th></th>
   </tr>
   @for (cat of lotInfo.categoryInfos; track cat; let index = $index) {
@@ -54,6 +55,7 @@
     <th>{{cat.categoryName}}</th>
     <th>{{cat.premiumStart}}</th>
     <th>{{cat.premiumEnd}}</th>
+    <th>{{payments[index]}}</th>
     <th>
       <button (click)="deleteCategory(index)">удалить</button>
     </th>
@@ -64,20 +66,23 @@
   <mat-form-field>
     <mat-label>Категория</mat-label>
     <mat-select [(ngModel)]="selectedCategory" name="auctionType">
-      <mat-option *ngFor="let cat of selectableCategories | keyvalue; " [value]="cat.key">{{cat.value}}</mat-option>
+      <mat-option *ngFor="let cat of selectableCategories" [value]="cat.categoryId">{{cat.categoryName}}</mat-option>
     </mat-select>
   </mat-form-field>
-  <mat-form-field>
-    <mat-label>Период премиума</mat-label>
-    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-      <input matStartDate formControlName="start" placeholder="Start date">
-      <input matEndDate formControlName="end" placeholder="End date">
-    </mat-date-range-input>
-    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-date-range-picker #picker></mat-date-range-picker>
-  </mat-form-field>
-  <button (click)="addCategory()">добавить</button>
+  <div *ngIf="selectedCategory>=0">
+    <mat-form-field>
+      <mat-label>Период премиума</mat-label>
+      <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+        <input matStartDate formControlName="start" placeholder="Start date" (dateChange)="dateChange()">
+        <input matEndDate formControlName="end" placeholder="End date" (dateChange)="dateChange()">
+      </mat-date-range-input>
+      <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker [dateClass]="dateClass" #picker disabled="false"></mat-date-range-picker>
+    </mat-form-field>
+    <input type="number" [(ngModel)]="premiumPayment" disabled />
+    <button (click)="addCategory()">добавить</button>
+  </div>
 </div>
 
 <h6>Способы доставки</h6>

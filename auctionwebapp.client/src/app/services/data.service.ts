@@ -10,6 +10,7 @@ import { CatalogRequest } from '../model/catalogRequest';
 import { TokenApiModel } from '../model/tokenApiModel';
 import { LoginInfo } from '../model/loginInfo';
 import { RegistrationInfo } from '../model/registrationInfo';
+import { PremiumInfo } from '../model/premiumInfo';
 
 @Injectable()
 export class DataService {
@@ -36,6 +37,10 @@ export class DataService {
       })
   }
 
+  getFreeDays(categoryId: number, year: number, month: number) {
+    return this.http.get<Array<number>>(this.url + "lots/freeDays?catId=" + categoryId + "&year=" + year + "&month=" + month);
+  }
+
   placeBid(lotId: number, bid: BidRequest) {
     return this.http.post(this.url + "bids", bid);
   }
@@ -46,6 +51,10 @@ export class DataService {
 
   getCategories(withAll: boolean) {
     return this.http.get(this.url + "lists/categories?all=" + withAll);
+  }
+
+  getCategoriesPremium() {
+    return this.http.get<Array<PremiumInfo>>(this.url + "lists/categories/premium");
   }
 
   getConditions() {

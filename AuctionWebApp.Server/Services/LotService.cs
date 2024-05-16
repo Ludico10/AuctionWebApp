@@ -190,5 +190,42 @@ namespace AuctionWebApp.Server.Services
             //уведомления
             await context.SaveChangesAsync();
         }
+
+        public async Task<List<int>> FreePremiumDates(ushort categoryId, int month, int year)
+        {
+            var result = new List<int>();
+            var category = await context.Categories.FirstOrDefaultAsync(c => c.CId == categoryId);
+            if (category != null)
+            {
+                var count = DateTime.DaysInMonth(year, month);
+                var firstDay = new DateOnly(year, month, 1);
+                var lastDay = new DateOnly(year, month, count);
+                var candidats = await context.LotCategories
+                                            .Where(lc => lc.LcCategoryId == categoryId
+                                                      && lc.LcPremiumStart != null
+                                                      && lc.LcPremiumEnd != null
+                                                      && lc.LcPremiumStart <= lastDay
+                                                      && lc.LcPremiumEnd >= firstDay)
+                                            .ToListAsync();
+                var limit = category.СPaidPositionsCount;
+                for (var i = 1; i <= count; i++)
+                {
+                    int findCount = 0;
+                    for (int j = 0; j < candidats.Count && findCount < limit; j++)
+                    {
+                        if (candidats[i].LcPremiumStart <= firstDay && candidats[i].LcPremiumEnd >= firstDay)
+                        {
+                            findCount++;
+                        }
+                    }
+
+                    if (findCount < limit)
+                        result.Add(i);
+                    firstDay = firstDay.AddDays(1);
+                }
+            }
+
+            return result;
+        }
     }
 }

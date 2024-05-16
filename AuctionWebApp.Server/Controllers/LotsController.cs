@@ -56,6 +56,12 @@ namespace AuctionWebApp.Server.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpGet("freeDays")]
+        public async Task<IEnumerable<int>> GetFreeDaysAsync(ushort catId, int year, int month)
+        {
+            return await lotService.FreePremiumDates(catId, month, year);
+        }
+
         [HttpGet("comments/{lotId}")]
         public async Task<IEnumerable<CommentInfo>> GetLotCommentsAsync(ulong lotId)
         {

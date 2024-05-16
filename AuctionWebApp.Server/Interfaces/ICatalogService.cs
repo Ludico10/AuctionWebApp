@@ -7,6 +7,7 @@ namespace AuctionWebApp.Server.Interfaces
     {
         public Task<Dictionary<byte, string>> GetAuctionTypes();
         public Task<Dictionary<ushort, string>> GetCategories(bool withAll);
+        public Task<List<PremiumInfo>> GetPremiumCategories();
         public Task<Dictionary<byte, string>> GetConditions();
         public Task<Dictionary<ushort, string>> GetDeliveries();
         public Dictionary<byte, string> GetSortWays();

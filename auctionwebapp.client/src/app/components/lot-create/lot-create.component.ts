@@ -4,6 +4,8 @@ import { LotInfo } from "../../model/lotInfo";
 import { CategoryInfo } from "../../model/categoryInfo";
 import { FormControl, FormGroup } from "@angular/forms";
 import { DeliveryInfo } from "../../model/deliveryInfo";
+import { MatCalendarCellClassFunction, MatMonthView } from "@angular/material/datepicker";
+import { PremiumInfo } from "../../model/premiumInfo";
 
 @Component({
   selector: 'lot-create',
@@ -12,6 +14,7 @@ import { DeliveryInfo } from "../../model/deliveryInfo";
     '../../../css/bootstrap.css',
     '../../../css/responsive.css',
     '../../../css/style.css',
+    './lot-create.component.css'
   ],
   providers: [DataService]
 })
@@ -23,10 +26,13 @@ export class LotCreateComponent implements OnInit {
 
   lotInfo: LotInfo = new LotInfo(3, "", 10);
 
-  selectedCategory: number = 0;
-  selectableCategories: Map<number, string> = new Map<number, string>();
+  selectedCategory: number = -1;
+  categories: Array<PremiumInfo> = new Array<PremiumInfo>();
+  selectableCategories: Array<PremiumInfo> = new Array<PremiumInfo>();
+  payments: Array<number> = new Array<number>();
+  premiumPayment: number = 0;
 
-  selectedDelivery: number = 0;
+  selectedDelivery: number = -1;
   selectableDeliveries: Map<number, string> = new Map<number, string>();
   payment: number = 0;
 
@@ -36,6 +42,10 @@ export class LotCreateComponent implements OnInit {
   paramKey: string = "";
   paramValue: string = "";
 
+  year: number = 2024;
+  month: number = 1;
+  freeDates: Array<number> = new Array<number>();
+
   range = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
@@ -44,13 +54,9 @@ export class LotCreateComponent implements OnInit {
   constructor(private dataService: DataService) { }
 
   ngOnInit() {
-      this.dataService.getCategories(false).subscribe((data: any) => {
-        let categories = data as typeof this.selectableCategories;
-        for (let i = 0; i < Object.keys(categories).length; i++) {
-          let key = parseInt(Object.keys(categories)[i]);
-          let value = Object.values(categories)[i];
-          this.selectableCategories.set(key, value);
-        }
+      this.dataService.getCategoriesPremium().subscribe((data: Array<PremiumInfo>) => {
+        this.selectableCategories = data;
+        this.categories = data;
       });
       this.dataService.getConditions().subscribe((data: any) => {
         this.conditions = data as typeof this.conditions;
@@ -66,6 +72,40 @@ export class LotCreateComponent implements OnInit {
           this.selectableDeliveries.set(key, value);
         }
       });
+  }
+
+  dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
+    if (view === 'month') {
+      let year = cellDate.getFullYear();
+      let month = cellDate.getMonth();
+      if (year !== this.year || month !== this.month) {
+        this.dataService.getFreeDays(this.selectedCategory, year, month).subscribe((data: Array<number>) => {
+          this.freeDates = data;
+          const date = cellDate.getDate();
+          let inside = this.freeDates.includes(date);
+          this.year = year;
+          this.month = month;
+          return inside ? 'example-custom-date-class' : '';
+        });
+      }else {
+        const date = cellDate.getDate();
+        let inside = this.freeDates.includes(date);
+        return inside ? 'example-custom-date-class' : '';
+      }
+    }
+    return '';
+  };
+
+  dateChange() {
+    if (this.selectedCategory >= 0) {
+      let startDate = this.range.get('start')!.value!;
+      let endDate = this.range.get('end')!.value!;
+      let dif = (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24) + 1;
+      let cat = this.selectableCategories.find(c => c.categoryId == this.selectedCategory);
+      if (cat) {
+        this.premiumPayment = Math.floor(dif * cat.payment) / 100;
+      }
+    }
   }
 
   addParam() {
@@ -85,17 +125,25 @@ export class LotCreateComponent implements OnInit {
   deleteCategory(row: number) {
     if (this.lotInfo.categoryInfos.length >= row) {
       let categoryInfo = this.lotInfo.categoryInfos[row];
-      this.selectableCategories.set(categoryInfo.categoryId, categoryInfo.categoryName);
-      this.lotInfo.categoryInfos.splice(row, 1);
+      let cat = this.categories.find(cat => cat.categoryId == categoryInfo.categoryId);
+      if (cat) {
+        this.selectableCategories.push(cat);
+        this.lotInfo.categoryInfos.splice(row, 1);
+        this.payments.splice(row, 1);
+      }
     }
   }
 
   addCategory() {
-    if (this.selectableCategories.has(this.selectedCategory)) {
-      let cat = this.selectableCategories.get(this.selectedCategory);
-      let categoryInfo = new CategoryInfo(this.selectedCategory, cat!, this.range.get('start')!.value!, this.range.get('end')!.value!);
+    let cat = this.selectableCategories.find(cat => cat.categoryId == this.selectedCategory)
+    if (cat) {
+      let categoryInfo = new CategoryInfo(this.selectedCategory, cat.categoryName, this.range.get('start')!.value!, this.range.get('end')!.value!);
       this.lotInfo.categoryInfos.push(categoryInfo);
-      this.selectableCategories.delete(this.selectedCategory);
+      this.payments.push(this.premiumPayment);
+      let index = this.selectableCategories.lastIndexOf(cat);
+      this.selectableCategories.splice(index, 1);
+      this.selectedCategory = -1;
+      this.premiumPayment = 0;
     }
   }
 
@@ -113,6 +161,7 @@ export class LotCreateComponent implements OnInit {
       let deliveryInfo = new DeliveryInfo(this.selectedDelivery, del!, this.payment);
       this.lotInfo.deliveryInfos.push(deliveryInfo);
       this.selectableDeliveries.delete(this.selectedDelivery);
+      this.selectedCategory = -1;
     }
   }
 

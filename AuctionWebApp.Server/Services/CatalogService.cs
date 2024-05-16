@@ -20,6 +20,20 @@ namespace AuctionWebApp.Server.Services
                 .ToDictionaryAsync(c => c.CId, c => c.CName);
         }
 
+        public async Task<List<PremiumInfo>> GetPremiumCategories()
+        {
+            var result = new List<PremiumInfo>();
+            var categories = await context.Categories
+                                          .Where(c => c.CId > 0)
+                                          .ToListAsync();
+            foreach (var category in categories) 
+            {
+                result.Add(new PremiumInfo(category));
+            }
+
+            return result;
+        }
+
         public async Task<Dictionary<byte, string>> GetConditions()
         {
             return await context.ItemConditions.ToDictionaryAsync(ic => ic.IcId, ic => ic.IcName);

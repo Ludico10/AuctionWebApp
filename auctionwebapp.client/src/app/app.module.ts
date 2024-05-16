@@ -12,6 +12,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
 
 import { AppRoutingModule } from './app-routing.module';
 import { LotDetailComponent } from './components/lot-detail/lot-detail.component';
@@ -61,7 +63,7 @@ export function tokenGetter() {
     MatCheckboxModule, MatPaginatorModule,
     MatFormFieldModule, MatSelectModule,
     MatDatepickerModule, ReactiveFormsModule,
-    NgxMaterialTimepickerModule,
+    NgxMaterialTimepickerModule, MatInputModule, 
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
