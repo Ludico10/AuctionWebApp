@@ -1,4 +1,4 @@
-<div>
+<div class="header-back">
   <header-section></header-section>
 </div>
 <div class="info-box">
@@ -24,11 +24,11 @@
     <h6>Времени до завершения: {{daysBefore}}дней {{hoursBefore}}ч {{minsBefore}}мин {{secsBefore}}с</h6>
     <div>
       Категории:
-      <a *ngFor="let cat of lot!.categoryInfos" href="/lots">{{cat.categoryName}}</a>
+      <a class="cat-ref" *ngFor="let cat of lot!.categoryInfos" href="/catalog">{{cat.categoryName}}</a>
     </div>
     <h6>Состояние: {{lot!.conditionName}}</h6>
 
-    <div class="user-box">
+    <div class="user-box" *ngIf="!isSeller">
       <img *ngIf="sellerAvatar.size !== 0; else NotFound" [src]="sellerAvatar.get(lot!.sellerId)" />
       <ng-template #NotFound>
         <img src="../assets/images/client-1.png" />
@@ -38,9 +38,9 @@
         <div class="rating-box">
           @for (i of [1, 2, 3, 4, 5]; track i) {
             @if (lot!.sellerRating >= 2 * i) {
-              <img src="../assets/images/twitter.png" />
+              <img src="../assets/images/star.png" />
             } @else {
-              <img src="../assets/images/youtube.png" />
+              <img src="../assets/images/black-star.png" />
             }
           }
         </div>
@@ -53,16 +53,22 @@
     </div>
     <h2>Текущая стоимость:</h2>
     <h1 class="title">{{currentCost / 100}} BYN</h1>
-    <div class="button-conteiner">
-      <button (click)="modalService.open('modal-1')">сделать ставку</button>
+    <div class="button-conteiner" *ngIf="!isSeller; else SellerOptions">
+      <button class="buttton" (click)="modalService.open('modal-1')">сделать ставку</button>
       <button (click)="favoriteClick()">
         @if (isFavorite) {
-          <img src="../assets/images/twitter.png" />
+          <img src="../assets/images/hurt.png" />
         } @else {
-          <img src="../assets/images/youtube.png" />
+          <img src="../assets/images/hurt-white.png" />
         }
       </button>
     </div>
+    <ng-template #SellerOptions>
+      <div class="button-conteiner">
+        <button class="buttton" (click)="redirectToEdit()" ng-disabled="!isNew">редактировать</button>
+        <button class="buttton" (click)="modalService.open('yes-no')">удалить</button>
+      </div>
+    </ng-template>
   </div>
 </div>
 
@@ -80,14 +86,22 @@
   </div>
 </jw-modal>
 
-<div>
-  <h1>Описание</h1>
+<jw-modal id="yes-no">
+  <h1>Удалить лот?</h1>
+  <div>
+    <button (click)="delete()">ок</button>
+    <button (click)="modalService.close();">отмена</button>
+  </div>
+</jw-modal>
+
+<div class="margin-section">
+  <h1 class="title">Описание</h1>
   {{lot!.description}}
   <div class="info-box">
     <div *ngIf="lot!.parameters.size != 0" class="left-table">
       <div>
-        <table>
-          <caption>Дополнительные параметры:</caption>
+        <div class="title">Дополнительные параметры:</div>
+        <table class="table">
           @for (param of lot!.parameters | keyvalue; track param) {
           <tr>
             <th>{{param.key}}</th>
@@ -104,8 +118,8 @@
     </div>
     <div [class.right-table]="lot!.parameters.size != 0" class="right-table">
       <div *ngIf="lot!.deliveryInfos.length != 0; else noDelivery">
-        <table>
-          <caption>Доставка:</caption>
+        <div class="title">Доставка:</div>
+        <table class="table">
           @for (delivery of lot!.deliveryInfos; track delivery) {
           <tr>
             <th>{{delivery.countryName}}</th>
@@ -120,16 +134,19 @@
     </div>
   </div>
 </div>
-<div>
-  <h1>Комментарии</h1>
+<div class="margin-section">
+  <h1 class="title">Комментарии</h1>
   <div *ngIf="comments.length != 0; else NoComments">
-    <div *ngFor="let com of comments" style="comment-box">
+    <div *ngFor="let com of comments" class="comment-boxx">
       <img *ngIf="comAvatars.has(com.userId); else AvaNotFound" [src]="comAvatars.get(com.userId)" />
       <ng-template #AvaNotFound>
         <img src="../assets/images/client-2.png" />
       </ng-template>
-      <div style="info">
-        <h5>{{com.userName}}  {{com.time | date: 'hh:mm:ss a' }}</h5>
+      <div class="info">
+        <div class="com-author">
+          <h5>{{com.userName}}</h5>
+          <div class="com-time">{{com.time | date: 'hh:mm:ss a' }}</div>
+        </div>
         <div>{{com.text}}</div>
       </div>
     </div>
@@ -137,7 +154,7 @@
   <ng-template #NoComments>
     Здесь пока нет комментариев
   </ng-template>
-  <div>
+  <div class="com-string">
     <input type="text" placeholder="Введите текст" [(ngModel)]="newComment.text">
     <button (click)="placeComment()">
       Отправить

@@ -36,21 +36,21 @@ namespace AuctionWebApp.Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                await lotService.Change(lotInfo);
-                return Ok(lotInfo);
+                var result = await lotService.Change(lotInfo);
+                if (result) return Ok(lotInfo);
             }
 
             return BadRequest(ModelState);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteLotAsync(LotInfo lotInfo)
+        [HttpDelete("{lotId}")]
+        public async Task<IActionResult> DeleteLotAsync(ulong lotId)
         {
-            if (ModelState.IsValid && lotInfo.Id != null)
+            if (ModelState.IsValid)
             {
-                await lotService.Remove(lotInfo.Id.Value, lotInfo.SellerId, lotInfo.InitialCost);
+                var result = await lotService.Remove(lotId);
                 //штраф
-                return Ok(lotInfo);
+                return Ok(result);
             }
 
             return BadRequest(ModelState);

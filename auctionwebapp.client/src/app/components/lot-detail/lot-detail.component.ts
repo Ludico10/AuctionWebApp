@@ -7,6 +7,7 @@ import { BidRequest } from '../../model/bidRequest'
 import { LotInfo } from '../../model/lotInfo';
 import { CommentInfo } from '../../model/commentInfo';
 import { ModalService } from '../../services/modal.service';
+import { TimeService } from '../../services/time.service';
 
 @Component({
   selector: 'lot-page',
@@ -17,10 +18,13 @@ import { ModalService } from '../../services/modal.service';
     '../../../css/style.css',
     './lot-detail.component.css'
   ],
-  providers: [DataService]
+  providers: [DataService, TimeService]
 })
 
 export class LotDetailComponent implements OnInit {
+
+  isSeller = false;
+  isNew = false;
 
   time = new Date();
   daysBefore: number = 0;
@@ -41,9 +45,12 @@ export class LotDetailComponent implements OnInit {
   comAvatars: Map<number, any> = new Map<number, any>();
   sellerAvatar: Map<number, any> = new Map<number, any>();
 
-  constructor(private dataService: DataService, protected modalService: ModalService, private router: Router, activeRoute: ActivatedRoute) {
+  constructor(private dataService: DataService, private timeService: TimeService, protected modalService: ModalService, private router: Router, activeRoute: ActivatedRoute) {
     this.bid.lotId = Number.parseInt(activeRoute.snapshot.queryParams["id"]);
-    this.bid.userId = 3;
+    let uidStr = localStorage.getItem('uid');
+    if (uidStr) {
+      this.bid.userId = Number.parseInt(uidStr);
+    }
   }
 
   ngOnInit() {
@@ -52,12 +59,10 @@ export class LotDetailComponent implements OnInit {
       if (this.lot) {
         let timeBefore = this.lot!.finishTime - this.time.getTime();
         this.daysBefore = Math.floor(timeBefore / 1000 / 60 / 60 / 24);
-        let totalHours = Math.floor(timeBefore / 1000 / 60 / 60);
-        this.hoursBefore = totalHours - this.daysBefore * 24;
-        let totalMins = Math.floor(timeBefore / 1000 / 60);
-        this.minsBefore = totalMins - totalHours * 60;
-        let totalSecs = Math.floor(timeBefore / 1000);
-        this.secsBefore = totalSecs - totalMins * 60;
+        let timeArr = this.timeService.getTimeFromMilli(timeBefore);
+        this.hoursBefore = timeArr[0];
+        this.minsBefore = timeArr[1];
+        this.secsBefore = timeArr[2];
         if (this.secsBefore == 0) {
           this.dataService.getCurrentCost(this.bid.lotId!).subscribe((data: number) => this.currentCost = data);
         }
@@ -68,6 +73,7 @@ export class LotDetailComponent implements OnInit {
       this.dataService.getLotInfo(this.bid.lotId).subscribe((data: LotInfo) => {
         this.lot = data;
         if (this.lot) {
+          this.sellerCheck(this.lot.sellerId);
           this.dataService.getImage(this.lot.sellerId.toString(), "users").subscribe({
             next: (image: any) => {
               this.createImageFromBlob(this.sellerAvatar, this.lot!.sellerId, image);
@@ -76,7 +82,10 @@ export class LotDetailComponent implements OnInit {
           });
         }
       });
-      this.dataService.getCurrentCost(this.bid.lotId).subscribe((data: number) => this.currentCost = data);
+      this.dataService.getCurrentCost(this.bid.lotId).subscribe((data: number) => {
+        this.currentCost = data;
+        this.isNew = (this.currentCost == this.lot?.initialCost);
+      });
       this.dataService.getLotComments(this.bid.lotId).subscribe((data: any) => {
         this.comments = data as typeof this.comments;
         this.comments.forEach(com => {
@@ -98,6 +107,16 @@ export class LotDetailComponent implements OnInit {
         });
       }
     }
+  }
+
+  sellerCheck(id: number) {
+    let idString = localStorage.getItem("uid");
+    if (idString) {
+      let uid = Number.parseInt(idString);
+      this.isSeller = (uid == id);
+      return;
+    }
+    this.isSeller = false;
   }
 
   createImageFromBlob(collection: Map<number, any>, i: number, image: Blob) {
@@ -151,5 +170,26 @@ export class LotDetailComponent implements OnInit {
 
   save() {
     this.dataService.placeBid(2, this.bid).subscribe(() => this.router.navigateByUrl("/"));
+  }
+
+  redirectToEdit() {
+    if (this.lot) {
+      this.dataService.lotEdit = this.lot;
+      this.router.navigate(["/create"], {
+        state: {
+          lotInfo: this.lot
+        }
+      });
+    }
+  }
+
+  delete() {
+    if (this.lot?.id && this.isSeller) {
+      this.dataService.removeLot(this.lot.id).subscribe((data: boolean) => {
+        if (data) {
+          this.router.navigate([""]);
+        }
+      });
+    }
   }
 }

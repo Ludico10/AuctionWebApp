@@ -16,7 +16,12 @@ namespace AuctionWebApp.Server.Services
             {
                 var auction = AuctionFactory.GetAuction(lot.LAuctionType);
                 var costStep = auction.GetCostStep(lot);
-                return new LotInfo(lot, costStep);
+                var info = new LotInfo(lot, costStep);
+                //чтобы не показывать категорию "все"
+                var categories = info.CategoryInfos.ToList();
+                categories.RemoveAll(cat => cat.CategoryId == 0);
+                info.CategoryInfos = categories;
+                return info;
             }
 
             return null;
@@ -32,12 +37,20 @@ namespace AuctionWebApp.Server.Services
                 return null;
             }
 
-            Lot? lot = new(lotInfo, user, type, condition);
-            await context.AddAsync(lot);
+            Lot? lot = context.Lots.SingleOrDefault(l => l.LName == lotInfo.Name
+                                                 && l.LSellerId == lotInfo.SellerId);
+            if (lot != null)
+            {
+                return null;
+            }
+
+            lot = new(lotInfo, user, type, condition);
+            await context.Lots.AddAsync(lot);
             await context.SaveChangesAsync();
             lot = context.Lots.SingleOrDefault(l => l.LName == lotInfo.Name
                                                  && l.LSellerId == lotInfo.SellerId);
-            if (lot == null)
+
+            if(lot == null)
             {
                 return lot;
             }
@@ -131,8 +144,11 @@ namespace AuctionWebApp.Server.Services
                 }
                 else
                 {
-                    context.LotCategories.Remove(categories[i]);
-                    categories.RemoveAt(i);
+                    if (categories[i].LcCategoryId > 0)
+                    {
+                        context.LotCategories.Remove(categories[i]);
+                        categories.RemoveAt(i);
+                    }
                 }
             }
 
@@ -142,18 +158,18 @@ namespace AuctionWebApp.Server.Services
             }
         }
 
-        public async Task Change(LotInfo lotInfo)
+        public async Task<bool> Change(LotInfo lotInfo)
         {
             var lot = await context.Lots.SingleOrDefaultAsync(l => l.LId == lotInfo.Id);
             var condition = await context.ItemConditions.SingleOrDefaultAsync(ic => ic.IcId == lotInfo.ConditionId);
             if (lotInfo.Id == null || lot == null || condition == null)
             {
-                return;
+                return false;
             }
 
             if (await auctionService.GetActualCost(lot) != lot.LInitialCost)
             {
-                return;
+                return false;
             }
 
             lot.FromLotInfo(lotInfo, condition);
@@ -173,22 +189,23 @@ namespace AuctionWebApp.Server.Services
             await ChangeDeliveries(lot.LId, lotInfo);
             await ChangeCategories(lot.LId, lotInfo);
             await context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task Remove(ulong lotId, ulong winnerId, ulong cost)
+        public async Task<bool> Remove(ulong lotId)
         {
             var lot = await context.Lots.SingleOrDefaultAsync(l => l.LId == lotId);
-            var winner = await context.Users.SingleOrDefaultAsync(u => u.UId == winnerId);
-            if (lot == null || winner == null)
+            if (lot == null)
             {
-                return;
+                return false;
             }
 
-            await context.FinishedAuctions.AddAsync(new FinishedAuction(lot, winnerId, cost));
+            await context.FinishedAuctions.AddAsync(new FinishedAuction(lot, lot.LSellerId, lot.LInitialCost));
             //await context.SaveChangesAsync();
-            context.Remove(lot);
+            context.Lots.Remove(lot);
             //уведомления
             await context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<int>> FreePremiumDates(ushort categoryId, int month, int year)

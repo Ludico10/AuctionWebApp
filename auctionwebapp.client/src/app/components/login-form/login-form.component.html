@@ -1,16 +1,31 @@
-<div class="container">
-  <form #loginForm="ngForm" (ngSubmit)="login(loginForm)">
-    <h2 class="form-signin-heading">Авторизация</h2>
-    <div *ngIf="invalidLogin" class="alert alert-danger">Неправильный логин или пароль.</div>
-    <br />
-    <label for="email" class="sr-only">Логин</label>
-    <input type="email" id="email" name="email" [(ngModel)]="credentials.email"
-           class="form-control" placeholder="Email" required>
-    <br />
-    <label for="password" class="sr-only">Пароль</label>
-    <input type="password" id="password" name="password" [(ngModel)]="credentials.password"
-           class="form-control" placeholder="Password" required>
-    <br />
-    <button class="btn btn-lg btn-primary" type="submit" [disabled]="!loginForm.valid">войти</button>
-  </form>
+<div class="header-back">
+  <header-section></header-section>
+</div>
+<div class="page-back">
+  <div class="wrapper">
+    <div class="combined-login-box">
+      <h2 class="combined-login-box-head">Авторизация</h2>
+      <form #loginForm="ngForm" (ngSubmit)="login(loginForm)">
+        <div class="combined-login-row">
+          <label for="email" class="sr-only">Логин</label>
+          <div class="combined-login-col">
+            <input type="email" id="email" name="email" [(ngModel)]="credentials.email"
+                   class="combined-input" placeholder="Email" required>
+          </div>
+        </div>
+        <div class="combined-login-row">
+          <label for="password" class="sr-only">Пароль</label>
+          <div class="combined-login-col">
+            <input type="password" id="password" name="password" [(ngModel)]="credentials.password"
+                   class="combined-input" placeholder="Password" required>
+          </div>
+        </div>
+        <div *ngIf="!invalidLogin" class="combined-error">Неправильный логин или пароль.</div>
+        <a class="combined-ref" href="registration">Создать аккаунт</a>
+        <div class="combined-box">
+          <button class="combined-login-btn" type="submit" [disabled]="!loginForm.valid">войти</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

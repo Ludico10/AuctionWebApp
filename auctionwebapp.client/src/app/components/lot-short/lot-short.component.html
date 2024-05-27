@@ -4,17 +4,19 @@
       <h5>New</h5>
     </div>
     <div class="img-box">
+      <div></div>
       <img src="../assets/images/slider-img.png" alt="" *ngIf="isImageLoading; else ImageFound">
       <ng-template #ImageFound>
         <img [src]="imageToShow" alt="" />
       </ng-template>
+      <div></div>
     </div>
     <div class="detail-box">
-      <h6>{{info.auctionTypeName}}</h6>
+      <h5>{{info.name}}</h5>
       <h6 class="price">
         {{info.currentCost}}$
       </h6>
-      <h6>{{info.name}}</h6>
+      <h6>{{info.auctionTypeName}}</h6>
     </div>
   </a>
 </div>

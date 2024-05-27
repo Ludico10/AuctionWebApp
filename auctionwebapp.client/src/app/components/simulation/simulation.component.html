@@ -1,43 +1,59 @@
-<header-section></header-section>
-<div class="form-group">
-  <label>Начальная цена:</label>
-  <input type="number" [(ngModel)]="info.InitialPrice" class="form-control" />
+<div class="header-back">
+  <header-section></header-section>
 </div>
-<div class="form-group">
-  <label>Шаг ставки:</label>
-  <input type="number" [(ngModel)]="info.PriceStep" class="form-control" />
+<h3 class="title">Введите информацию о лоте</h3>
+<div class="lot-info">
+  <div class="input-part">
+    <div class="form-group">
+      <label>Начальная цена:</label>
+      <input type="number" [(ngModel)]="info.InitialPrice" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label>Шаг ставки:</label>
+      <input type="number" [(ngModel)]="info.PriceStep" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label>Количество циклов:</label>
+      <input type="number" [(ngModel)]="info.CyclesCount" class="form-control" />
+    </div>
+  </div>
+  <div class="type-part">
+    <label>Вид аукциона:</label><br />
+    <mat-radio-group class="group" aria-label="Select an option" [(ngModel)]="info.AuctionTypeId">
+      <mat-radio-button *ngFor="let at of auctionTypes | keyvalue" [value]="at.key">{{at.value}}</mat-radio-button><br />
+    </mat-radio-group>
+  </div>
+  <div class="description-part">
+    <textarea maxlength="60" readonly>
+      Закрытым называется аукцион, в ходе которого участники не получают информацию о ставках друг друга. Актуальная стоимость лота на таких торгах равна начальной на протяжении всего аукциона.
+      Итоги подводятся после истечения времени. Победителем признается участник, совершивший самую высокую ставку. Конечная стоимость предмета равна ставке победителя. В ситуации, когда равных максимальных ставок несколько, победелем является участник, первым совершивший ставку этой суммы.
+    </textarea>
+  </div>
 </div>
-<div class="form-group">
-  <label>Количество циклов:</label>
-  <input type="number" [(ngModel)]="info.CyclesCount" class="form-control" />
+<h3 class="title">Введите информацию о участниках</h3>
+<div class="user-box">
+  <simulation-user class="boxx" *ngFor="let user of info.Users; index as i" [(user)]="info.Users[i]"></simulation-user>
 </div>
-<div>
-  <label>Тип аукциона:</label><br />
-  <mat-radio-group aria-label="Select an option" [(ngModel)]="info.AuctionTypeId">
-    <mat-radio-button *ngFor = "let at of auctionTypes | keyvalue" [value]="at.key">{{at.value}}</mat-radio-button><br />
-  </mat-radio-group>
-</div>
-<div>
-  <simulation-user-form *ngFor = "let user of info.Users; index as i" [(user)] ="info.Users[i]"></simulation-user-form>
-</div>
-<div>
-  <input type="button" value="Добавить" (click)="addUser()" class="btn btn-success" />
-</div>
-<div>
-  <input type="button" value="Запустить" (click)="run()" class="btn btn-success" />
+<div class="add-box">
+  <input type="button" value=" добавить " (click)="addUser()" class="btn btn-success" />
 </div>
 <div *ngIf="errorString; else graph">
   <label>{{errorString}}</label>
 </div>
 <ng-template #graph>
   <div *ngIf="result">
+    <h3 class="title">Результаты</h3>
     <grafico-barras [list]="graficoInfo"></grafico-barras>
     <div *ngIf="result.winnerId; else other_content">
-      <label>Победитель аукциона: {{info.Users[result!.winnerId! - 1].Name}}</label><br />
-      <label>Конечная стоимость: {{result!.resultCost}}</label>
+      <h3 class="title">Победитель аукциона: {{info.Users[result!.winnerId! - 1].Name}}</h3><br />
+      <h3 class="title">Конечная стоимость: {{result!.resultCost}}</h3>
     </div>
     <ng-template #other_content>
       <label>Лот не продан</label>
     </ng-template>
   </div>
 </ng-template>
+<div class="add-box">
+  <button (click)="run()" class="btn btn-success">запустить</button>
+</div>
+

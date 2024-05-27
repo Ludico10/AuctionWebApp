@@ -1,0 +1,17 @@
+.h {
+    color: white !important;
+    margin-left: 10px;
+}
+
+.check-container {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+  align-items: flex-start;
+}
+
+.check {
+
+  color: white;
+
+}

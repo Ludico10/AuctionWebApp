@@ -2,7 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
 @Component({
   selector: "check-all",
-  templateUrl: "./check-all.component.html"
+  templateUrl: "./check-all.component.html",
+  styleUrls: ['./check-all.component.css']
 })
 
 export class CheckAllComponent implements OnInit {

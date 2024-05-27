@@ -1,9 +1,19 @@
-.sim-user .box{
+.sim-user .box {
     margin: 2px;
     border: 1px solid;
     width: 270px;
 }
 
-.sim-user .label {
-    margin-left: 5px;
+.sim-user .str {
+    display: flex;
+    margin: 10px;
+}
+
+.sim-user .str label {
+    float: left;
+}
+
+.sim-user .str input {
+    float: right;
+    margin-left: 10px;
 }

@@ -1,5 +1,4 @@
-﻿using AuctionWebApp.Server.Data.Dto;
-using AuctionWebApp.Server.Data.Entities;
+﻿using AuctionWebApp.Server.Data.Entities;
 
 namespace AuctionWebApp.Server.Interfaces
 {

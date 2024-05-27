@@ -1,28 +1,36 @@
-<header-section></header-section>
+<div class="header-back">
+  <header-section></header-section>
+</div>
 <div class="global-box">
   <div class="filter-part">
-    <h3>Текущая цена</h3>
-    <p>От: </p>
-    <input type="number" [(ngModel)]="catalogInfo.minPrice" />
-    <p>До: </p>
-    <input type="number" [(ngModel)]="catalogInfo.maxPrice" />
-    <h3>Категория</h3>
-    <mat-radio-group aria-label="Select an option" [(ngModel)]="catalogInfo.categoryId">
-      <mat-radio-button *ngFor="let cat of categories | keyvalue" [value]="cat.key" [checked]="cat.key == catalogInfo.categoryId">{{cat.value}}</mat-radio-button><br />
+    <h5>Текущая цена</h5>
+    <div class="input-text">
+      <div class="text">От: </div>
+      <input type="number" [(ngModel)]="catalogInfo.minPrice" />
+    </div>
+    <div class="input-text">
+      <div class="text">До: </div>
+      <input type="number" [(ngModel)]="catalogInfo.maxPrice" />
+    </div>
+    <h5>Категория</h5>
+    <mat-radio-group class="group" aria-label="Select an option" [(ngModel)]="catalogInfo.categoryId">
+      <mat-radio-button class="radio-button" *ngFor="let cat of categories | keyvalue" [value]="cat.key" [checked]="cat.key == catalogInfo.categoryId">{{cat.value}}</mat-radio-button><br />
     </mat-radio-group>
     <check-all [title]="condTitle" [categories]="catalogInfo.conditions!" [catChecked]="catalogInfo.condChecked"></check-all>
     <check-all [title]="typesTitle" [categories]="catalogInfo.auctionTypes!" [catChecked]="catalogInfo.typeChecked"></check-all>
-    <h3>Способ сортировки</h3>
+    <h5>Способ сортировки</h5>
     <mat-radio-group aria-label="Select an option" [(ngModel)]="catalogInfo.selectedSorter">
       <mat-radio-button *ngFor="let sorter of sorters | keyvalue" [value]="sorter.key" [checked]="sorter.key == catalogInfo.selectedSorter">{{sorter.value}}</mat-radio-button><br />
     </mat-radio-group>
-    <div>
+    <div class="search-btn">
       <button type="button" (click)="getItems()">подобрать</button>
     </div>
   </div>
   <div class="list-part">
-    <input type="text" [(ngModel)]="catalogInfo.searchString" />
-    <button type="button" (click)="getItems()">найти</button>
+    <div class="search-section">
+      <input type="text" [(ngModel)]="catalogInfo.searchString" />
+      <button type="button" (click)="getItems()">найти</button>
+    </div>
     <div *ngIf="lots.length != 0; else noLots">
       <div class="list-box">
         <lot-short *ngFor="let lot of lots; index as i"
@@ -31,11 +39,14 @@
       </div>
     </div>
     <ng-template #noLots>
-      <h3>Нет лотов, удовлетворяющих критериям поиска</h3>
+      <div class="text-box">
+        <h6>Нет лотов, удовлетворяющих критериям поиска</h6>
+      </div>
     </ng-template>
   </div>
 </div>
 <mat-paginator #paginator
+               class="paginator"
                [length]="totalCount"
                [pageSize]="catalogInfo.itemsOnPage"
                [pageIndex]="catalogInfo.pageNumber-1"

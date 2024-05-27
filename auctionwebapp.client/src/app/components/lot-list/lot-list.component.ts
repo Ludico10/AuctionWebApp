@@ -7,6 +7,7 @@ import { CatalogRequest } from '../../model/catalogRequest';
 import { LotShort } from '../../model/lot-short';
 
 @Component({
+  selector: "catalog-page",
   templateUrl: './lot-list.component.html',
   styleUrls: [
     '../../../css/bootstrap.css',

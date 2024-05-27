@@ -4573,8 +4573,6 @@ input[type="button"].btn-block {
   .navbar-expand-xl {
     -ms-flex-flow: row nowrap;
     flex-flow: row nowrap;
-    -ms-flex-pack: start;
-    justify-content: flex-start;
   }
 
     .navbar-expand-xl .navbar-nav {

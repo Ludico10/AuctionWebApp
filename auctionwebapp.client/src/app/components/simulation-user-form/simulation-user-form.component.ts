@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { SimulationUser } from "../../model/simulationUser";
 
 @Component({
-  selector: "simulation-user-form",
+  selector: "simulation-user",
   templateUrl: "./simulation-user-form.component.html",
   styleUrls: ['./simulation-user-form.component.css']
 })

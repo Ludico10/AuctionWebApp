@@ -29,10 +29,13 @@ import { ModalComponent } from './components/modal/modal.component';
 import { CheckAllComponent } from './components/check-all/check-all.component';
 import { LoginComponent } from './components/login-form/login-form.component';
 import { AuthGuard } from './guards/auth.guard';
-import { LotCreateComponent } from './components/lot-create/lot-create.component';
+import { LotCreateComponent } from './components/lot-create-form/lot-create.component';
 import { RegistrationComponent } from './components/registration-form/registration-form.component';
 import { ImageUploadComponent } from './components/image-upload/image-upload-component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+//import { InfoComponent } from './components/info/info.component';
+//import { UserLotsComponent } from './components/user-lots/user-lots.component';
+//import { UserProfileComponent } from './components/user-profile/user-profile.compoent';
 
 export function tokenGetter() {
   return localStorage.getItem("jwt");

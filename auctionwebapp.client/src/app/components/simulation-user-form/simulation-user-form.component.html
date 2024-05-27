@@ -1,16 +1,16 @@
 <div class="sim-user">
 <div class="box" [style.background-color]="user.Color">
-  <div>
-    <label>Название:</label>
-    <input type="text" [(ngModel)]="user.Name" style="margin-left: 27px" />
+  <div class="str">
+    <label>Имя:</label>
+    <input type="text" [(ngModel)]="user.Name"/>
   </div>
-  <div>
-    <label>Оценка лота:</label>
-    <input type="number" [(ngModel)]="user.EstimatedCost" style="margin-left: 6px" />
+  <div class="str">
+    <label>Оценка:</label>
+    <input type="number" [(ngModel)]="user.EstimatedCost"/>
   </div>
-  <div>
+  <div class="str">
     <label>Бюджет:</label>
-    <input type="number" [(ngModel)]="user.Budget" style="margin-left: 37px" />
+    <input type="number" [(ngModel)]="user.Budget"/>
   </div>
 </div>
  </div>

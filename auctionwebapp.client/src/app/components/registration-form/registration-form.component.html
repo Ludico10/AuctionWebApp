@@ -1,26 +1,43 @@
-<div class="container">
-  <h2 class="form-signin-heading">Регистрация</h2>
-  <div *ngIf="invalidParams" class="alert alert-danger">Введенные данные невалидны.</div>
-  <br />
-  <label for="name" class="sr-only">Никнейм</label>
-  <input type="text" id="name" name="name" [(ngModel)]="info.name"
-         class="form-control" placeholder="Name" required>
-  <br />
-  <label for="email" class="sr-only">Адрес эл. почты</label>
-  <input type="email" id="email" name="email" [(ngModel)]="info.email"
-         class="form-control" placeholder="Email" required>
-  <br />
-  <label for="address" class="sr-only">Адрес проживания (не обязательно)</label>
-  <input type="text" id="address" name="address" [(ngModel)]="info.address"
-         class="form-control" placeholder="Address" required>
-  <br />
-  <label for="password" class="sr-only">Пароль</label>
-  <input type="password" id="password" name="password" [(ngModel)]="info.passwordHash"
-         class="form-control" placeholder="Password" required>
-  <br />
-  <label for="passwordCheck" class="sr-only">Подтверждение пароля</label>
-  <input type="password" id="passwordCheck" name="passwordCheck" [(ngModel)]="passwordCheck"
-         class="form-control" placeholder="PasswordCheck" required>
-  <br />
-  <button class="btn btn-lg btn-primary" type="button" (click)="save()">зарегистрироваться</button>
+<div class="header-back">
+  <header-section></header-section>
+</div>
+<div class="page-back">
+  <div class="wrapper">
+    <div class="combined-login-box">
+      <h2 class="combined-login-box-head">Регистрация</h2>
+      <div class="combined-login-row">
+        <label for="name" class="sr-only">Никнейм</label>
+        <div class="combined-login-col">
+          <input type="text" id="name" name="name" [(ngModel)]="info.name"
+                 class="combined-input" placeholder="Name" required>
+        </div>
+      </div>
+      <div class="combined-login-row">
+        <label for="email" class="sr-only">Адрес эл. почты</label>
+        <div class="combined-login-col">
+          <input type="email" id="email" name="email" [(ngModel)]="info.email"
+                 class="combined-input" placeholder="Email" required>
+        </div>
+      </div>
+      <div class="combined-login-row">
+        <label for="password" class="sr-only">Пароль</label>
+        <div class="combined-login-col">
+          <input type="password" id="password" name="password" [(ngModel)]="info.passwordHash"
+                 class="combined-input" placeholder="Password" required>
+        </div>
+      </div>
+      <div class="combined-login-row">
+        <label for="passwordCheck" class="sr-only">Подтверждение пароля</label>
+        <div class="combined-login-col">
+          <input type="password" id="passwordCheck" name="passwordCheck" [(ngModel)]="passwordCheck"
+                 class="combined-input" placeholder="PasswordCheck" required>
+        </div>
+      </div>
+      <div *ngIf="!invalidParams" class="alert alert-danger">Введенные данные невалидны.</div>
+      <a class="combined-ref" href="login">У меня уже есть аккаунт</a>
+      <div class="combined-box">
+        <button class="combined-login-btn" type="button" (click)="save()">зарегистрироваться</button>
+      </div>
+    </div>
+  </div>
 </div>

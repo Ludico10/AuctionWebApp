@@ -3,11 +3,11 @@
 <h6>Описание</h6>
 <textarea cols="30" rows="4" [(ngModel)]="lotInfo.description"></textarea>
 <h6>Время завершения</h6>
-<input [ngxTimepicker]="fullTime" [format]="24" readonly>
+<input [ngxTimepicker]="fullTime" [format]="24" [(ngModel)]="finishTimeString" readonly>
 <ngx-material-timepicker #fullTime></ngx-material-timepicker>
 <mat-form-field>
   <mat-label>Choose a date</mat-label>
-  <input matInput [matDatepicker]="final">
+  <input matInput [matDatepicker]="final" [value]="finishDate">
   <mat-hint>MM/DD/YYYY</mat-hint>
   <mat-datepicker-toggle matIconSuffix [for]="final"></mat-datepicker-toggle>
   <mat-datepicker #final></mat-datepicker>
@@ -140,3 +140,5 @@
 
 <h6>Изображения</h6>
 <image-upload></image-upload>
+
+<button type="button" (click)="save()">сохранить</button>

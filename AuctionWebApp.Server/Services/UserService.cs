@@ -9,7 +9,7 @@ namespace AuctionWebApp.Server.Services
 {
     public class UserService(MySqlContext context, ITokenService tokenService) : IUserService
     {
-        public async Task<TokenApiModel?> Login(LoginInfo info)
+        public async Task<UserShortInfo?> Login(LoginInfo info)
         {
             var user = await context.Users.FirstOrDefaultAsync(u =>
                             (u.UEmail == info.Email) && (u.UPasswordHash == info.Password));
@@ -20,19 +20,21 @@ namespace AuctionWebApp.Server.Services
 
             var claims = new List<Claim>
             {
+                new(ClaimTypes.Role, user.URole.RName),
                 new(ClaimTypes.Name, info.Email),
-                new(ClaimTypes.Role, user.URole.RName)
+                new(ClaimTypes.NameIdentifier, user.UId.ToString())
             };
             var accessToken = tokenService.GenerateAccessToken(claims);
             var refreshToken = tokenService.GenerateRefreshToken();
             user.URefreshToken = refreshToken;
             user.URefreshTokenExpiryTime = DateTime.Now.AddDays(7);
             await context.SaveChangesAsync();
-            return new TokenApiModel
+            var tokens = new TokenApiModel
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken
             };
+            return new UserShortInfo(user, tokens);
         }
 
         public async Task<bool> Registration(RegistrationInfo registrationInfo)
@@ -49,6 +51,12 @@ namespace AuctionWebApp.Server.Services
                 return false;
             }
         }
+
+        public async Task<string?> GetRoleName(byte roleId)
+        {
+            var role = await context.Roles.FirstOrDefaultAsync(r => r.RId == roleId);
+            return role?.RName;
+        } 
 
         public async Task<TokenApiModel?> RefreshToken(TokenApiModel tokenApiModel)
         {

@@ -7,8 +7,8 @@ namespace AuctionWebApp.Server.Interfaces
     {
         public Task<LotInfo?> GetInfo(ulong lotId);
         public Task<Lot?> Place(LotInfo lotInfo);
-        public Task Change(LotInfo lotInfo);
-        public Task Remove(ulong lotId, ulong winnerId, ulong cost);
+        public Task<bool> Change(LotInfo lotInfo);
+        public Task<bool> Remove(ulong lotId);
         public Task<List<int>> FreePremiumDates(ushort categoryId, int month, int year);
     }
 }

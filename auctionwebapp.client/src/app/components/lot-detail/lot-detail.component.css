@@ -2,12 +2,22 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
+.header-back {
+  background-color: #252525;
+  margin-bottom: 20px;
+}
+
 .h1 {
   color: #9D2222;
 }
 
+.cat-ref {
+    margin-right: 10px;
+}
+
 .info-box {
     display: flex;
+    margin-top: 10px;
 }
 
 .info-box .left-part {
@@ -59,25 +69,32 @@ li.minthmbheiht {
   .info-box .right-part {
     float: right;
     width: 40%;
+    margin-top: 50px;
   }
 
-  .info-box .right-part .title {
+  .title {
     color: #9D2222;
   }
 
   .info-box .right-part .user-box {
       display: flex;
       width: 50%;
+      margin-bottom: 10px;
   }
 
   .info-box .right-part .user-box .img {
       float: left;
       width: 20%;
-      max-height: 100px;
+      height: 100px;
+      max-width: 100px;
+      object-fit: contain;
+      vertical-align: middle;
+      border: 1px solid #252525;
   }
 
   .info-box .right-part .user-box .info {
       float: right;
+      margin-left: 15px;
   }
 
     .info-box .right-part .user-box .info .name {
@@ -93,10 +110,31 @@ li.minthmbheiht {
     }
 
   .info-box .right-part .button-conteiner {
-      display: block;
+      display: flex;
   }
 
-  .info-box .left-table {
+    .info-box .right-part .button-conteiner .buttton {
+      font-size: 20px;
+      background-color: #9D2222;
+      -webkit-transition: all 0.3s;
+      transition: all 0.3s;
+      border: 1px solid transparent;
+      border-radius: 0;
+      color: white;
+      margin-right: 10px;
+      min-height: 40px;
+    }
+
+    .info-box .right-part .button-conteiner .buttton:hover{
+      background-color: #252525;
+      border-color: #252525;
+    }
+
+    .margin-section {
+        margin-left: 10px;
+    }
+
+      .info-box .left-table {
       float: left;
       width: 50%;
   }
@@ -106,16 +144,86 @@ li.minthmbheiht {
       width: 50%
   }
 
-  .comment-box {
-      display:flex
+.table {
+  width: 100%;
+  margin-bottom: 20px;
+  border: 1px solid #dddddd;
+  border-collapse: collapse;
+  width: 80%;
+}
+
+  .table th {
+    font-weight: bold;
+    padding: 5px;
+    background: #efefef;
+    border: 1px solid #dddddd;
   }
 
-  .comment-box .img {
+  .table td {
+    border: 1px solid #dddddd;
+    padding: 5px;
+  }
+
+  .comment-boxx {
+      display:flex;
+      margin: 5px;
+  }
+
+    .comment-boxx img {
       float: left;
       width: 10%;
+      height: 100px;
       max-width: 100px;
+      object-fit: contain;
+      vertical-align: middle;
+      border: 1px solid #252525;
+    }
+
+  .comment-boxx .info {
+      float: right;
+      margin-left: 10px;
   }
 
-  .comment-box .info {
-      float: right;
+  .comment-boxx .info .com-author {
+      display: flex;
   }
+
+  .comment-boxx .info .com-author .com-time {
+      font-size: 12px;
+      margin-left: 5px;
+  }
+
+.com-string {
+  margin: 10px;
+  width: 90%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+  .com-string input {
+    height: 30px;
+    outline: none;
+    color: #101010;
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.16);
+    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.16);
+    width: 80%;
+  }
+
+  .com-string button {
+    background-color: #9D2222;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+    border-radius: 0;
+    color: white;
+    height: 30px;
+    width: 100px;
+    margin-left: 10px;
+  }
+
+    .com-string button:hover {
+      background-color: #252525;
+      border-color: #252525;
+    }

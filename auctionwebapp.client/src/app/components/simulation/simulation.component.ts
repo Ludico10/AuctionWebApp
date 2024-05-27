@@ -7,7 +7,9 @@ import { GraficoModel } from "../../model/grafico.model";
 import { SimulationResult } from "../../model/simulationResult";
 
 @Component({
+  selector: "simulation",
   templateUrl: './simulation.component.html',
+  styleUrls: ['./simulation.component.css'],
   providers: [DataService, SimulationService]
 })
 

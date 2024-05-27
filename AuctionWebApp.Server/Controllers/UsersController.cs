@@ -17,13 +17,13 @@ namespace AuctionWebApp.Server.Controllers
                 return BadRequest();
             }
 
-            var tokens = await userService.Login(loginModel);
-            if (tokens is null)
+            var userInfo = await userService.Login(loginModel);
+            if (userInfo is null)
             {
                 return Unauthorized();
             }
 
-            return Ok(tokens);
+            return Ok(userInfo);
         }
 
         [HttpPost("registrate")]
@@ -39,13 +39,13 @@ namespace AuctionWebApp.Server.Controllers
                 Email = registrationInfo.Email,
                 Password = registrationInfo.PasswordHash
             };
-            var tokens = await userService.Login(loginModel);
-            if (tokens is null)
+            var userShort = await userService.Login(loginModel);
+            if (userShort is null)
             {
                 return Unauthorized();
             }
 
-            return Ok(tokens);
+            return Ok(userShort);
         }
 
         [HttpPost("refresh")]
@@ -80,6 +80,18 @@ namespace AuctionWebApp.Server.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpGet("roles/{roleId}")]
+        public async Task<IActionResult> GetRoleName(byte roleId)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await userService.GetRoleName(roleId);
+                return (result != null) ? Json(result) : NoContent();
+            }
+
+            return BadRequest();
         }
     }
 }

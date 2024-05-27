@@ -14,6 +14,10 @@
     color: #252525;
   }
 
+  .box h5 {
+    color: #252525;
+  }
+
     .box h6.price {
       color: #9D2222;
     }
@@ -31,9 +35,20 @@
       margin: 0;
     }
 
-  .box .img-box img {
-    width: 75%;
+  .box .img-box {
+    height: 304px;
+    display: flex;
+    align-items: center;
+    justify-items: center;
   }
+
+    .box .img-box img {
+      width: 75%;
+    }
+
+    .box .img-box div {
+        width: 12.5%;
+    }
 
   .box:hover {
     background-color: #9D2222;

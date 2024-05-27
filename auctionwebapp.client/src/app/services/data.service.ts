@@ -11,22 +11,25 @@ import { TokenApiModel } from '../model/tokenApiModel';
 import { LoginInfo } from '../model/loginInfo';
 import { RegistrationInfo } from '../model/registrationInfo';
 import { PremiumInfo } from '../model/premiumInfo';
+import { UserShortInfo } from '../model/userShortInfo';
 
 @Injectable()
 export class DataService {
 
   private url: string = "http://localhost:5234/";
 
+  public lotEdit: LotInfo | null = null;
+
   constructor(private http: HttpClient) { }
 
   login(credentials: LoginInfo) {
-    return this.http.post<TokenApiModel>(this.url + "users/login", credentials, {
+    return this.http.post<UserShortInfo>(this.url + "users/login", credentials, {
       headers: new HttpHeaders({ "Content-Type": "application/json" })
     })
   }
 
   registrate(info: RegistrationInfo) {
-    return this.http.post<TokenApiModel>(this.url + "users/registrate", info, {
+    return this.http.post<UserShortInfo>(this.url + "users/registrate", info, {
       headers: new HttpHeaders({ "Content-Type": "application/json" })
     })
   }
@@ -35,6 +38,10 @@ export class DataService {
     return this.http.post<TokenApiModel>(this.url + "users/refresh", credentials, {
       headers: new HttpHeaders({ "Content-Type": "application/json" })
       })
+  }
+
+  getRoleName(roleId: number) {
+    return this.http.get(this.url + "users/roles/" + roleId.toString());
   }
 
   getFreeDays(categoryId: number, year: number, month: number) {
@@ -97,6 +104,14 @@ export class DataService {
 
   placeFavorite(lotId: number, userId: number, trackable: boolean) {
     return this.http.post(this.url + "bids/track/" + lotId + "?userId=" + userId, trackable);
+  }
+
+  placeLot(lotInfo: LotInfo) {
+    return this.http.post(this.url + "/lots", lotInfo);
+  }
+
+  removeLot(lotId: number) {
+    return this.http.delete<boolean>(this.url + "/lots/" + lotId.toString());
   }
 
   getImage(imageName: string, imageType: string): Observable<Blob> {

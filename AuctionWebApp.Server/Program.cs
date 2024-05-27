@@ -55,7 +55,7 @@ builder.Services.AddHangfire(h => h.SetDataCompatibilityLevel(CompatibilityLevel
                                                     PrepareSchemaIfNecessary = true,
                                                     DashboardJobListLimit = 25000,
                                                     TransactionTimeout = TimeSpan.FromMinutes(1),
-                                                    TablesPrefix = "Hangfire",
+                                                    TablesPrefix = "Hangfire"
                                                 })));
 
 builder.Services.AddScoped<IAuctionService, AuctionService>();
