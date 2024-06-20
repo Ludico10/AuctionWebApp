@@ -117,7 +117,8 @@ namespace AuctionWebApp.Server.Services
                     new TrackableLot()
                     {
                         TlLotId = lotId,
-                        TlUserId = userId
+                        TlUserId = userId,
+                        TlMaxAutomaticBid = 0
                     });
             }
             else

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AuctionWebApp.Server.Data.Dto;
+using System;
 using System.Collections.Generic;
 
 namespace AuctionWebApp.Server.Data.Entities;
@@ -22,4 +23,15 @@ public partial class AuctionComplaint
     public virtual AuctionComplaintReason AcReason { get; set; } = null!;
 
     public virtual ICollection<AuctionComplaintSolution> AuctionComplaintSolutions { get; set; } = new List<AuctionComplaintSolution>();
+
+    public AuctionComplaint() { }
+
+    public AuctionComplaint(ComplaintRequest request, DateOnly date)
+    {
+        AcReasonId = request.ReasonId;
+        AcDescription = request.Comment;
+        AcAuctionId = request.LotId;
+        AcDate = date;
+        AcSolved = 0;
+    }
 }

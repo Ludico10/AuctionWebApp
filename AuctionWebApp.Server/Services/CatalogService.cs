@@ -39,6 +39,19 @@ namespace AuctionWebApp.Server.Services
             return await context.ItemConditions.ToDictionaryAsync(ic => ic.IcId, ic => ic.IcName);
         }
 
+        public async Task<Dictionary<ushort, string>> GetComplaintReasons()
+        {
+            return await context.AuctionComplaintReasons.ToDictionaryAsync(acr => acr.AcrId, acr => acr.AcrName);
+        }
+
+        public async Task SendComplaint(ComplaintRequest complaintRequest)
+        {
+            var date = DateOnly.FromDateTime(DateTime.Now);
+            var complaint = new AuctionComplaint(complaintRequest, date);
+            await context.AuctionComplaints.AddAsync(complaint);
+            await context.SaveChangesAsync();
+        }
+
         public async Task<Dictionary<ushort, string>> GetDeliveries()
         {
             return await context.Countries.ToDictionaryAsync(c => c.CouId, c => c.CouName);
@@ -182,9 +195,10 @@ namespace AuctionWebApp.Server.Services
             return (lots, count);
         }
 
-        public async Task<List<(Bid, ulong)>> GetLotsWithBids(ulong userId, int itemsOnPage, int pageNumber)
+        public async Task<(List<(Bid, ulong)>, int)> GetLotsWithBids(ulong userId, int itemsOnPage, int pageNumber)
         {
             var result = new List<(Bid, ulong)>();
+            int count = 0;
             var bids = await context.Bids
                                     .Where(b => b.BParticipantId == userId)
                                     .OrderByDescending(b => b.BTime)
@@ -198,6 +212,7 @@ namespace AuctionWebApp.Server.Services
                     var lot = bid.BLot;
                     if (!result.Any(r => r.Item1.BLot == lot))
                     {
+                        count++;
                         if (skipCount <= 0 && takeCount < itemsOnPage)
                         {
                             var cost = await auctionService.GetActualCost(lot);
@@ -209,18 +224,20 @@ namespace AuctionWebApp.Server.Services
                 }
             }
 
-            return result;
+            return (result, count);
         }
 
-        public async Task<List<(TrackableLot, ulong)>> GetTrackableLots(ulong userId, int itemsOnPage, int pageNumber)
+        public async Task<(List<(TrackableLot, ulong)>, int)> GetTrackableLots(ulong userId, int itemsOnPage, int pageNumber)
         {
             var result = new List<(TrackableLot, ulong)>();
             var trackableLots = await context.TrackableLots
                                              .Where(tl => tl.TlUserId == userId)
                                              .OrderBy(tl => tl.TlLot.LFinishTime)
-                                             .Skip((pageNumber - 1) * itemsOnPage)
-                                             .Take(itemsOnPage)
                                              .ToListAsync();
+            var count = trackableLots.Count;
+            trackableLots = trackableLots.Skip((pageNumber - 1) * itemsOnPage)
+                                         .Take(itemsOnPage)
+                                         .ToList();
             if (trackableLots != null)
             {
                 foreach (var trackable in trackableLots)
@@ -230,10 +247,10 @@ namespace AuctionWebApp.Server.Services
                 }
             }
 
-            return result;
+            return (result, count);
         }
 
-        public async Task<List<(Lot, ulong)>> GetUserActualLots(ulong userId, int itemsOnPage, int pageNumber)
+        public async Task<(List<(Lot, ulong)>, int)> GetUserActualLots(ulong userId, int itemsOnPage, int pageNumber)
         {
             var result = new List<(Lot, ulong)>();
             var lots = await context.Lots
@@ -242,6 +259,10 @@ namespace AuctionWebApp.Server.Services
                                     .Skip((pageNumber - 1) * itemsOnPage)
                                     .Take(itemsOnPage)
                                     .ToListAsync();
+            var count = lots.Count;
+            lots = lots.Skip((pageNumber - 1) * itemsOnPage)
+                       .Take(itemsOnPage)
+                       .ToList();
             if (lots != null)
             {
                 foreach(var lot in lots)
@@ -251,18 +272,22 @@ namespace AuctionWebApp.Server.Services
                 }
             }
 
-            return result;
+            return (result, count);
         }
 
-        public async Task<List<FinishedAuction>> GetUserFinishedLots(ulong userId, bool isWinner, int itemsOnPage, int pageNumber)
+        public async Task<(List<FinishedAuction>, int)> GetUserFinishedLots(ulong userId, bool isWinner, int itemsOnPage, int pageNumber)
         {
-            return await context.FinishedAuctions
+            var result = new List<FinishedAuction>();
+            result = await context.FinishedAuctions
                                 .Where(fa => (isWinner && fa.FaWinnerId == userId)
                                           || (!isWinner && fa.FaSellerId == userId))
                                 .OrderByDescending(fa => fa.FaStateUpdateTime)
-                                .Skip((pageNumber - 1) * itemsOnPage)
-                                .Take(itemsOnPage)
                                 .ToListAsync();
+            var count = result.Count;
+            result = result.Skip((pageNumber - 1) * itemsOnPage)
+                           .Take(itemsOnPage)
+                           .ToList();
+            return (result, count);
         }
     }
 }

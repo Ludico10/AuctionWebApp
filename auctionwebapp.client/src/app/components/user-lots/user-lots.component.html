@@ -1,0 +1,83 @@
+<div class="header-back">
+  <header-section [activePage]="6"></header-section>
+</div>
+<div class="title-box">
+  <h2>Связанные лоты</h2>
+</div>
+<div>
+  <div class="panel-box">
+    <label class="role-option" [ngStyle]="{'background-color' : (role==0) ? '#252525' : '#9d2222'}" (click)="roleChange(0)">Участник</label>
+    <label class="role-option" [ngStyle]="{'background-color' : (role==1) ? '#252525' : '#9d2222'}" (click)="roleChange(1)">Организатор</label>
+  </div>
+  <div *ngIf="!role; else ElseLists" class="panel-box">
+    <label class="list-option" [ngStyle]="{'background-color' : (list==0) ? '#252525' : '#9d2222'}" (click)="listChange(0)">Отслеживаемые</label>
+    <label class="list-option" [ngStyle]="{'background-color' : (list==1) ? '#252525' : '#9d2222'}" (click)="listChange(1)">С моими ставками</label>
+    <label class="list-option" [ngStyle]="{'background-color' : (list==2) ? '#252525' : '#9d2222'}" (click)="listChange(2)">Завершенные</label>
+  </div>
+  <ng-template #ElseLists>
+    <div class="panel-box">
+      <label class="role-option" [ngStyle]="{'background-color' : (list==3) ? '#252525' : '#9d2222'}" (click)="listChange(3)">Текущие</label>
+      <label class="role-option" [ngStyle]="{'background-color' : (list==4) ? '#252525' : '#9d2222'}" (click)="listChange(4)">Завершенные</label>
+    </div>
+  </ng-template>
+  <div *ngIf="list==0">
+    <div *ngIf="trackLots.length != 0; else noLots">
+      <div class="list-box">
+        <lot-short *ngFor="let lot of trackLots; index as i"
+                   [(info)]="trackLots[i].lotInfo" [forTrack]="true" [(autoBid)]="trackLots[i].automaticBid">
+        </lot-short>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="list==1">
+    <div *ngIf="bidLots.length != 0; else noLots">
+      <div class="list-box">
+        <lot-short *ngFor="let lot of bidLots; index as i"
+                   [(info)]="bidLots[i].lotInfo" [(size)]="bidLots[i].size" [(time)]="bidLots[i].time">
+        </lot-short>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="list==2">
+    <div *ngIf="winnedLots.length != 0; else noLots">
+      <div class="list-box">
+        <lot-short *ngFor="let lot of winnedLots; index as i"
+                   [(info)]="winnedLots[i]" [forFinnished]="true" [(reasons)]="reasons">
+        </lot-short>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="list==3">
+    <div *ngIf="ownedLots.length != 0; else noLots">
+      <div class="list-box">
+        <lot-short *ngFor="let lot of ownedLots; index as i"
+                   [(info)]="ownedLots[i]">
+        </lot-short>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="list==4">
+    <div *ngIf="closedLots.length != 0; else noLots">
+      <div class="list-box">
+        <lot-short *ngFor="let lot of closedLots; index as i"
+                   [(info)]="closedLots[i]" [forFinnished]="true" [(reasons)]="reasons">
+        </lot-short>
+      </div>
+    </div>
+  </div>
+  <ng-template #noLots>
+    <div class="text-box">
+      <h6>Спсок пуст</h6>
+    </div>
+  </ng-template>
+  <mat-paginator #paginator
+                 class="paginator"
+                 [length]="totalCount"
+                 [pageSize]="catalogInfo.itemsOnPage"
+                 [pageIndex]="catalogInfo.pageNumber-1"
+                 [showFirstLastButtons]="true"
+                 [pageSizeOptions]="[9, 15, 24]"
+                 aria-label="Select page"
+                 (page)="changePage($event)">
+  </mat-paginator>
+</div>

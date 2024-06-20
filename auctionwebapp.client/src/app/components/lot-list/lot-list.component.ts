@@ -5,6 +5,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { DataService } from '../../services/data.service';
 import { CatalogRequest } from '../../model/catalogRequest';
 import { LotShort } from '../../model/lot-short';
+import { Router } from '@angular/router';
 
 @Component({
   selector: "catalog-page",
@@ -28,9 +29,19 @@ export class LotListComponent implements OnInit {
   lots: Array<LotShort> = new Array();
   totalCount: number = 0;
 
-  constructor(private dataService: DataService) { }
+  startLimit: any;
+  minPrice: number = 0;
+  maxPrice?: number;
+
+  constructor(private dataService: DataService, private router: Router)
+  {
+    this.startLimit = this.router.getCurrentNavigation()?.extras.state?.['limit'];
+  }
 
   ngOnInit() {
+    if (this.startLimit) {
+      this.maxPrice = this.startLimit as number;
+    }
     this.dataService.getCategories(true).subscribe((data: any) => {
       this.categories = data as typeof this.categories;
     });
@@ -51,6 +62,8 @@ export class LotListComponent implements OnInit {
   }
 
   getItems() {
+    this.catalogInfo.minPrice = this.minPrice * 100;
+    this.catalogInfo.maxPrice = (this.maxPrice) ? this.maxPrice * 100 : this.maxPrice;
     this.dataService.getLotsShort(this.catalogInfo).subscribe((data: Array<LotShort>) => {
       this.lots = data;
       if (this.lots.length > 0) {

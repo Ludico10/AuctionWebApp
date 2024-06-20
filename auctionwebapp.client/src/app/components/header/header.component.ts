@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Router } from "@angular/router";
 import { JwtHelperService } from "@auth0/angular-jwt";
 import { DataService } from "../../services/data.service";
@@ -17,6 +17,9 @@ import { UserShortInfo } from "../../model/userShortInfo";
 })
 
 export class HeaderComponent implements OnInit {
+
+  @Input() activePage: number = -1;
+  @Output() activePageChange = new EventEmitter<number>();
 
   navPanel: boolean = false;
   showInfo: boolean = false;

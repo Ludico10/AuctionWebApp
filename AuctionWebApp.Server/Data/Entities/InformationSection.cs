@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AuctionWebApp.Server.Data.Entities;
+﻿namespace AuctionWebApp.Server.Data.Entities;
 
 public partial class InformationSection
 {

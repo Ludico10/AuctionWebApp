@@ -12,6 +12,11 @@ import { LoginInfo } from '../model/loginInfo';
 import { RegistrationInfo } from '../model/registrationInfo';
 import { PremiumInfo } from '../model/premiumInfo';
 import { UserShortInfo } from '../model/userShortInfo';
+import { TrackableShortInfo } from '../model/trackableShortInfo';
+import { BidShortInfo } from '../model/bidShortInfo';
+import { FinishedShortInfo } from '../model/finishedShortInfo';
+import { ComplaintRequest } from '../model/complaintRequest';
+import { sectionShort } from '../model/sectionShort';
 
 @Injectable()
 export class DataService {
@@ -72,12 +77,50 @@ export class DataService {
     return this.http.get(this.url + "lists/deliveries");
   }
 
+  getComplaintsReasons() {
+    return this.http.get(this.url + "lists/complaints/reasons");
+  }
+
+  placeComlaint(request: ComplaintRequest) {
+    return this.http.post(this.url + "lists/complaints", request);
+  }
+
   getSortWays() {
     return this.http.get(this.url + "lists/sorters");
   }
 
   getLotsShort(catalogInfo: CatalogRequest) {
     return this.http.put<LotShort[]>(this.url + "lists/catalog", catalogInfo, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    });
+  }
+
+  getTrackShort(catalogInfo: CatalogRequest) {
+    return this.http.put<TrackableShortInfo[]>(this.url + "lists/catalog/tracking", catalogInfo, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    });
+  }
+
+  getBidsShort(catalogInfo: CatalogRequest) {
+    return this.http.put<BidShortInfo[]>(this.url + "lists/catalog/bids", catalogInfo, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    });
+  }
+
+  getOwnedLots(catalogInfo: CatalogRequest) {
+    return this.http.put<LotShort[]>(this.url + "lists/catalog/owned", catalogInfo, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    });
+  }
+
+  getWinnedLots(catalogInfo: CatalogRequest) {
+    return this.http.put<FinishedShortInfo[]>(this.url + "lists/catalog/winned", catalogInfo, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    });
+  }
+
+  getClosedLots(catalogInfo: CatalogRequest) {
+    return this.http.put<FinishedShortInfo[]>(this.url + "lists/catalog/closed", catalogInfo, {
       headers: new HttpHeaders({ "Content-Type": "application/json" })
     });
   }
@@ -94,8 +137,8 @@ export class DataService {
     return this.http.get(this.url + "lots/comments/" + lotId);
   }
 
-  placeComment(info: CommentInfo, lotId: number) {
-    return this.http.post(this.url + "lots/comments/" + lotId, info);
+  placeComment(comment: CommentInfo, lotId: number) {
+    return this.http.post(this.url + "lots/comments", comment);
   }
 
   getFavorite(lotId: number, userId: number) {
@@ -107,14 +150,24 @@ export class DataService {
   }
 
   placeLot(lotInfo: LotInfo) {
-    return this.http.post(this.url + "/lots", lotInfo);
+    return this.http.post<LotInfo>(this.url + "lots", lotInfo, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    });
   }
 
   removeLot(lotId: number) {
-    return this.http.delete<boolean>(this.url + "/lots/" + lotId.toString());
+    return this.http.delete<boolean>(this.url + "lots/" + lotId.toString());
   }
 
   getImage(imageName: string, imageType: string): Observable<Blob> {
     return this.http.get(this.url + "images/" + imageType + "?name=" + imageName, { responseType: 'blob' });
+  }
+
+  getInfoNames() {
+    return this.http.get<Array<sectionShort>>(this.url + "lists/info");
+  }
+
+  getCategoryText(id: number) {
+    return this.http.get(this.url + "lists/info/" + id.toString());
   }
 }

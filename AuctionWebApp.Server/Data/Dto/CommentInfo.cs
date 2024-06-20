@@ -5,9 +5,12 @@ namespace AuctionWebApp.Server.Data.Dto
     public class CommentInfo
     {
         public ulong UserId { get; set; }
-        public string UserName { get; set; } = "";
+        public ulong LotId { get; set; }
         public DateTime Time { get; set; }
+        public string UserName { get; set; } = "";
         public string Text { get; set; } = "";
+
+        public CommentInfo() { }
 
         public CommentInfo(Comment comment)
         {

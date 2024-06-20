@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
 
 namespace AuctionWebApp.Server.Controllers
 {
@@ -13,6 +14,20 @@ namespace AuctionWebApp.Server.Controllers
             //if (System.IO.File.Exists(path))
             {
                 await HttpContext.Response.SendFileAsync(path);
+            }
+        }
+
+        [HttpPost("upload")]
+        public async Task PostImage()
+        {
+            var postedFile = HttpContext.Request.Form.Files["Image"];
+            if (postedFile != null)
+            {
+                string path = Directory.GetCurrentDirectory() + "\\Images\\actual\\" + postedFile.FileName + ".png";
+                using (Stream fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await postedFile.CopyToAsync(fileStream);
+                }
             }
         }
     }

@@ -5,9 +5,11 @@ namespace AuctionWebApp.Server.Data.Dto
     public class CategoryInfo
     {
         public ushort CategoryId { get; set; }
-        public string CategoryName { get; set; }
+        public string CategoryName { get; set; } = "";
         public DateOnly? PremiumStart { get; set; }
         public DateOnly? PremiumEnd { get; set; }
+
+        public CategoryInfo() { }
 
         public CategoryInfo(LotCategory lotCategory) 
         { 

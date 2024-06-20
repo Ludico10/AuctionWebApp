@@ -6,7 +6,7 @@ namespace AuctionWebApp.Server.Controllers
 {
     [ApiController]
     [Route("lists")]
-    public class ListsController(ICatalogService catalogService) : Controller
+    public class ListsController(ICatalogService catalogService, ICommunicationService communicationService) : Controller
     {
         [HttpGet("auctionTypes")]
         public async Task<JsonResult> GetAuctionTypesAsync()
@@ -30,6 +30,43 @@ namespace AuctionWebApp.Server.Controllers
         public async Task<JsonResult> GetConditionsAsync()
         {
             return Json(await catalogService.GetConditions());
+        }
+
+        [HttpGet("info")]
+        public async Task<JsonResult> GetInfoShortAsync()
+        {
+            return Json(await communicationService.GetNewsNames());
+        }
+
+        [HttpGet("info/{id}")]
+        public async Task<JsonResult> GetSectionText(uint id)
+        {
+            return Json(await communicationService.GetNewText(id));
+        }
+
+        [HttpGet("complaints/reasons")]
+        public async Task<JsonResult> GetComplaintReasonsAsync()
+        {
+            return Json(await catalogService.GetComplaintReasons());
+        }
+
+        [HttpPost("complaints")]
+        public async Task<IActionResult> PlaceComplaintsAsync(ComplaintRequest complaintRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await catalogService.SendComplaint(complaintRequest);
+                    return Ok();
+                } 
+                catch (Exception ex) 
+                { 
+                    BadRequest(ex);
+                }
+            }
+
+            return BadRequest();
         }
 
         [HttpGet("deliveries")]
@@ -61,16 +98,18 @@ namespace AuctionWebApp.Server.Controllers
             return result;
         }
 
-        [HttpGet("catalog/bids")]
+        [HttpPut("catalog/bids")]
         public async Task<IEnumerable<BidShortInfo>> GetBidShortsAsync(CatalogRequest listInfo)
         {
             var result = new List<BidShortInfo>();
             if (ModelState.IsValid && listInfo.UserId != null)
             {
                 var lotBidsList = await catalogService.GetLotsWithBids(listInfo.UserId.Value, listInfo.ItemsOnPage, listInfo.PageNumber);
-                foreach (var lbl in lotBidsList)
+                var lotInfo = new LotShortInfo((ulong)lotBidsList.Item2);
+                result.Add(new BidShortInfo(lotInfo));
+                foreach (var lbl in lotBidsList.Item1)
                 {
-                    var lotInfo = new LotShortInfo(lbl.Item1.BLot, lbl.Item2);
+                    lotInfo = new LotShortInfo(lbl.Item1.BLot, lbl.Item2);
                     result.Add(new BidShortInfo(lotInfo, lbl.Item1));
                 }
             }
@@ -78,16 +117,18 @@ namespace AuctionWebApp.Server.Controllers
             return result;
         }
 
-        [HttpGet("catalog/tracking")]
+        [HttpPut("catalog/tracking")]
         public async Task<IEnumerable<TrackableShortInfo>> GetTrackableShortsAsync(CatalogRequest listInfo)
         {
             var result = new List<TrackableShortInfo>();
             if (ModelState.IsValid && listInfo.UserId != null)
             {
                 var lotTrackableList = await catalogService.GetTrackableLots(listInfo.UserId.Value, listInfo.ItemsOnPage, listInfo.PageNumber);
-                foreach (var ltl in lotTrackableList)
+                var lotInfo = new LotShortInfo((ulong)(lotTrackableList.Item2));
+                result.Add(new TrackableShortInfo(lotInfo, null));
+                foreach (var ltl in lotTrackableList.Item1)
                 {
-                    var lotInfo = new LotShortInfo(ltl.Item1.TlLot, ltl.Item2);
+                    lotInfo = new LotShortInfo(ltl.Item1.TlLot, ltl.Item2);
                     result.Add(new TrackableShortInfo(lotInfo, ltl.Item1.TlMaxAutomaticBid));
                 }
             }
@@ -95,14 +136,15 @@ namespace AuctionWebApp.Server.Controllers
             return result;
         }
 
-        [HttpGet("ctalog/winned")]
+        [HttpPut("catalog/winned")]
         public async Task<IEnumerable<FinishedShortInfo>> GetWinnedShortsAsync(CatalogRequest listInfo)
         {
             var result = new List<FinishedShortInfo>();
             if (ModelState.IsValid && listInfo.UserId != null)
             {
                 var winnedList = await catalogService.GetUserFinishedLots(listInfo.UserId.Value, true, listInfo.ItemsOnPage, listInfo.PageNumber);
-                foreach (var winned in winnedList)
+                result.Add(new FinishedShortInfo((ulong)winnedList.Item2));
+                foreach (var winned in winnedList.Item1)
                 {
                     result.Add(new FinishedShortInfo(winned));
                 }
@@ -111,14 +153,15 @@ namespace AuctionWebApp.Server.Controllers
             return result;
         }
 
-        [HttpGet("catalog/owned")]
+        [HttpPut("catalog/owned")]
         public async Task<IEnumerable<LotShortInfo>> GetOwnedShortsAsync(CatalogRequest listInfo)
         {
             var result = new List<LotShortInfo>();
             if (ModelState.IsValid && listInfo.UserId != null)
             {
                 var lotList = await catalogService.GetUserActualLots(listInfo.UserId.Value, listInfo.ItemsOnPage, listInfo.PageNumber);
-                foreach (var lot in lotList)
+                result.Add(new LotShortInfo((ulong)lotList.Item2));
+                foreach (var lot in lotList.Item1)
                 {
                     result.Add(new LotShortInfo(lot.Item1, lot.Item2));
                 }
@@ -127,14 +170,15 @@ namespace AuctionWebApp.Server.Controllers
             return result;
         }
 
-        [HttpGet("catalog/closed")]
+        [HttpPut("catalog/closed")]
         public async Task<IEnumerable<FinishedShortInfo>> GetClosedShortsAsync(CatalogRequest listInfo)
         {
             var result = new List<FinishedShortInfo>();
             if (ModelState.IsValid && listInfo.UserId != null)
             {
                 var closedList = await catalogService.GetUserFinishedLots(listInfo.UserId.Value, false, listInfo.ItemsOnPage, listInfo.PageNumber);
-                foreach (var closed in closedList)
+                result.Add(new FinishedShortInfo((ulong)closedList.Item2));
+                foreach (var closed in closedList.Item1)
                 {
                     result.Add(new FinishedShortInfo(closed));
                 }

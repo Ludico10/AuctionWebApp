@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { DataService } from "../../services/data.service";
 import { LotShort } from "../../model/lot-short";
 import { CatalogRequest } from "../../model/catalogRequest";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'home-page',
@@ -20,7 +21,7 @@ export class HomePageComponent implements OnInit {
   activeCategory: number = 1;
   lots: LotShort[] = [];
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private router: Router) { }
 
     ngOnInit(): void {
       this.getLastLots();
@@ -47,5 +48,13 @@ export class HomePageComponent implements OnInit {
 
   categoryClick(key: number) {
     this.activeCategory = key;
+  }
+
+  lowPriceDirect() {
+    this.router.navigate(["/catalog"], {
+      state: {
+        limit: 10
+      }
+    });
   }
 }

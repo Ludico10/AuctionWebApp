@@ -1,9 +1,9 @@
 <div class="hero_area">
-  <header-section></header-section>
+  <header-section [activePage]="0"></header-section>
   <!-- slider section -->
   <section class="slider_section ">
     <div class="play_btn">
-      <a href="/simulation">
+      <a href="/catalog">
         <img src="../assets/images/play.png" alt="">
       </a>
     </div>
@@ -38,7 +38,7 @@
                     Участвуй в аукционах и проводи собственные
                   </p>
                   <div class="btn-box">
-                    <a href="" class="btn-1">
+                    <a href="info" class="btn-1">
                       Узнать больше
                     </a>
                     <a href="simulation" class="btn-2">
@@ -168,7 +168,7 @@
             ТЕКУЩАЯ СТАВКА МЕНЬШЕ 10 РУБЛЕЙ
           </h2>
           <div class="">
-            <a href="">
+            <a (click)="lowPriceDirect()">
               Перейти
             </a>
           </div>

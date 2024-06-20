@@ -1,16 +1,16 @@
 <div class="header-back">
-  <header-section></header-section>
+  <header-section [activePage]="1"></header-section>
 </div>
 <div class="global-box">
   <div class="filter-part">
     <h5>Текущая цена</h5>
     <div class="input-text">
       <div class="text">От: </div>
-      <input type="number" [(ngModel)]="catalogInfo.minPrice" />
+      <input type="number" [(ngModel)]="minPrice" />
     </div>
     <div class="input-text">
       <div class="text">До: </div>
-      <input type="number" [(ngModel)]="catalogInfo.maxPrice" />
+      <input type="number" [(ngModel)]="maxPrice" />
     </div>
     <h5>Категория</h5>
     <mat-radio-group class="group" aria-label="Select an option" [(ngModel)]="catalogInfo.categoryId">

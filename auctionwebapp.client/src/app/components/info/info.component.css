@@ -1,0 +1,47 @@
+.header-back {
+  background-color: #252525;
+}
+
+.page {
+  display: flex;
+}
+
+.list-part {
+  float: left;
+  width: 25%;
+  background-color: #9d2222;
+  border-color: #252525;
+  border: solid 2px;
+}
+
+.text-part {
+  float: right;
+  width: 75%;
+  margin-left: 15px;
+}
+
+.not-found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+  .not-found h6 {
+    color: #252525;
+  }
+
+.list-section {
+  width: 98%;
+  background-color: #9d2222;
+  padding: 5px;
+}
+
+  .list-section:hover {
+    background-color: #252525;
+  }
+
+.list-section .h3 {
+  color: white;
+  margin-left: 5px;
+}

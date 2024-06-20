@@ -9,7 +9,7 @@ namespace AuctionWebApp.Server.Controllers
     [Route("bids")]
     public class BidsController(IAuctionService auctionService) : Controller
     {
-        [HttpPost(), Authorize]
+        [HttpPost()]
         public async Task<IActionResult> PlaceBidAsync([FromBody] BidRequest newBid)
         {
             if (ModelState.IsValid)

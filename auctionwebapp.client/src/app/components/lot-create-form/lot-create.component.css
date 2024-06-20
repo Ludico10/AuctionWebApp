@@ -1,4 +1,96 @@
-button.example-custom-date-class {
+.example-custom-date-class {
   background: orange !important;
   border-radius: 100% !important;
+}
+
+input {
+  color: #707070;
+  border: 1px solid #707070;
+  height: 30px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 16px;
+  background: #fff;
+  font-weight: 500;
+  margin-bottom: 20px;
+  margin-right: 10px;
+}
+
+.mat-input {
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.input-pair {
+  display: flex;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.label-input {
+  margin-top: 6px;
+}
+
+.time-label {
+  color: #252525;
+  font-size: 12px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.descr-box {
+  margin: 15px;
+}
+
+h3 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+h5 {
+  margin-left: 20px;
+}
+
+.btn {
+  background: #9d2222;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  display: block;
+  text-align: center;
+  padding: 1px 14px;
+  border: none;
+  height: 30px;
+}
+
+  .btn:hover {
+    background-color: #252525;
+    color: white;
+  }
+
+.btn-save-box {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+}
+
+.btn-save-box button {
+    padding: 15px 15px;
+    font-size: 18px;
+    height: 55px;
+    margin: 20px;
+}
+
+.del-but {
+  width: 100%;
+  background: #9d2222;
+  color: white;
+  text-decoration: none;
+  border: none;
+}
+
+.del-btn:hover {
+  background-color: #252525;
 }

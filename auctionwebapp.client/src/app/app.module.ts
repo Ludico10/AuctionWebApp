@@ -33,8 +33,8 @@ import { LotCreateComponent } from './components/lot-create-form/lot-create.comp
 import { RegistrationComponent } from './components/registration-form/registration-form.component';
 import { ImageUploadComponent } from './components/image-upload/image-upload-component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
-//import { InfoComponent } from './components/info/info.component';
-//import { UserLotsComponent } from './components/user-lots/user-lots.component';
+import { InfoComponent } from './components/info/info.component';
+import { UserLotsComponent } from './components/user-lots/user-lots.component';
 //import { UserProfileComponent } from './components/user-profile/user-profile.compoent';
 
 export function tokenGetter() {
@@ -57,6 +57,8 @@ export function tokenGetter() {
     RegistrationComponent,
     LotCreateComponent,
     ImageUploadComponent,
+    UserLotsComponent,
+    InfoComponent,
     AppComponent
   ],
   imports: [

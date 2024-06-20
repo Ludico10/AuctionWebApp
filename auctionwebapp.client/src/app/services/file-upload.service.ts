@@ -4,16 +4,16 @@ import { Observable } from "rxjs";
 
 @Injectable()
 export class FileUploadService {
-  private baseUrl = 'http://localhost:8080';
+  private baseUrl = 'http://localhost:5234';
 
   constructor(private http: HttpClient) { }
 
-  upload(file: File): Observable<HttpEvent<any>> {
+  upload(file: File, lotId: number, imageId: number): Observable<HttpEvent<any>> {
+    let fileBlob = new Blob([file]);
     const formData: FormData = new FormData();
+    formData.append('Image', fileBlob, lotId.toString() + "-" + imageId.toString());
 
-    formData.append('file', file);
-
-    const req = new HttpRequest('POST', `${this.baseUrl}/upload`, formData, {
+    const req = new HttpRequest('POST', `${this.baseUrl}/images/upload`, formData, {
       reportProgress: true,
       responseType: 'json',
     });

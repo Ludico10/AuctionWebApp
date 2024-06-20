@@ -24,8 +24,12 @@ namespace AuctionWebApp.Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                await lotService.Place(lotInfo);
-                return Ok(lotInfo);
+                var lot = await lotService.Place(lotInfo);
+                if (lot != null)
+                {
+                    lotInfo.Id = lot.LId;
+                    return Ok(lotInfo);
+                }
             }
 
             return BadRequest(ModelState);
@@ -68,12 +72,12 @@ namespace AuctionWebApp.Server.Controllers
             return await communicationService.GetLotComments(lotId);
         }
 
-        [HttpPost("comments/{lotId}")]
-        public async Task<IActionResult> PostCommentAsync(ulong lotId, [FromBody] CommentInfo comment)
+        [HttpPost("comments")]
+        public async Task<IActionResult> PostCommentAsync(CommentInfo comment)
         {
             if (ModelState.IsValid)
             {
-                await communicationService.PlaceComment(comment, lotId);
+                await communicationService.PlaceComment(comment, comment.LotId);
                 return Ok(comment);
             }
 

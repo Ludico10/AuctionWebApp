@@ -49,6 +49,10 @@ export class SimulationComponent implements OnInit {
       return;
     }
 
+    if (this.info.AuctionTypeId > 2) {
+      this.info.PriceStep = 1;
+    }
+
     if (this.info.InitialPrice < 0 || this.info.PriceStep < 1) {
       this.errorString = "Значение поля, содержащего цену, не может быть отрицательным. Шаг стевки не может быть меньше 1.";
       return;

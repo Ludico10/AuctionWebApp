@@ -1,4 +1,4 @@
-﻿ /* MODAL STYLES
+ /* MODAL STYLES
 -------------------------------*/
 jw-modal {
   /* modals are hidden by default */
@@ -10,10 +10,10 @@ jw-modal {
   position: fixed;
   inset: 0;
   /* z-index must be higher than everything else on the page */
-  z-index: 10000;
+  z-index: 4;
   /* semi-transparent black background exposed by padding */
   background-color: rgba(0, 0, 0, .75);
-  padding: 40px;
+  padding: 12% 30%;
   /* enables scrolling for tall modals */
   overflow: auto;
 }
@@ -21,6 +21,7 @@ jw-modal {
 .jw-modal-body {
   padding: 20px;
   background: #fff;
+  border-radius: 15px;
 }
 
 body.jw-modal-open {

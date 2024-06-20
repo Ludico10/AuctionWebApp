@@ -58,12 +58,20 @@ namespace AuctionWebApp.Server.Services
             };
         }
 
-        public void DetermineWinner(SimulationResult simulationResult)
+        public void DetermineWinner(SimulationResult simulationResult, int auType)
         {
             var winnerBid = simulationResult.Bids
                                     .OrderBy(b => b.Cycle)
                                     .FirstOrDefault(b => b.Size == simulationResult.ResultCost);
-            simulationResult.WinnerId = winnerBid != null ? winnerBid.SimulationUserId : null;
+            if (auType < 4)
+            {
+                simulationResult.WinnerId = winnerBid?.SimulationUserId;
+            }
+            else
+            {
+                var maxBid = simulationResult.Bids.OrderBy(b => b.Size).ThenBy(b => b.Cycle).FirstOrDefault();
+                simulationResult.WinnerId = maxBid?.SimulationUserId;
+            }
 
         }
 

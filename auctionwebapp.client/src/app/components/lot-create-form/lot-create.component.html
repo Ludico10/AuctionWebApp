@@ -1,144 +1,210 @@
-<h6>Название</h6>
-<input type="text" [(ngModel)]="lotInfo.name" />
-<h6>Описание</h6>
-<textarea cols="30" rows="4" [(ngModel)]="lotInfo.description"></textarea>
-<h6>Время завершения</h6>
-<input [ngxTimepicker]="fullTime" [format]="24" [(ngModel)]="finishTimeString" readonly>
-<ngx-material-timepicker #fullTime></ngx-material-timepicker>
-<mat-form-field>
-  <mat-label>Choose a date</mat-label>
-  <input matInput [matDatepicker]="final" [value]="finishDate">
-  <mat-hint>MM/DD/YYYY</mat-hint>
-  <mat-datepicker-toggle matIconSuffix [for]="final"></mat-datepicker-toggle>
-  <mat-datepicker #final></mat-datepicker>
-</mat-form-field>
-
-<h6>Состояние</h6>
-<mat-form-field>
-  <mat-label>Состояние</mat-label>
-  <mat-select [(ngModel)]="lotInfo.conditionId" name="condition">
-    <mat-option *ngFor="let cond of conditions | keyvalue" [value]="cond.key">{{cond.value}}</mat-option>
-  </mat-select>
-</mat-form-field>
-
-<h6>Вид аукциона</h6>
-<mat-form-field>
-  <mat-label>Вид аукциона</mat-label>
-  <mat-select [(ngModel)]="lotInfo.auctionTypeId" name="auctionType">
-    <mat-option *ngFor="let auType of auctionTypes | keyvalue" [value]="auType.key">{{auType.value}}</mat-option>
-  </mat-select>
-</mat-form-field>
-<div>
-  <p>Начальная цена</p>
-  <input type="number" [(ngModel)]="initCost" />
-  <div *ngIf="lotInfo.auctionTypeId == 1">
-    <p>Шаг ставки</p>
-    <input type="number" [(ngModel)]="costStep" />
+<div class="header-back">
+  <header-section [activePage]="(lotInfo.id) ? -1 : 4"></header-section>
+</div>
+<div class="info-box">
+  <div class="left-part">
+    <div *ngIf="previews.length==0; else Uploaded">
+      <img class="img" src="../assets/images/add.png" (click)="triggerUpload($event)" />
+      <input type="file" accept="image/*" (click)="selectFile($event)" style="display:none" id="fileInput" name="filedata" #file/>
+    </div>
+    <ng-template #Uploaded>
+      <img class="img" [src]="previews[mainId]" />
+    </ng-template>
+    <div class="gallery">
+      <ul>
+        @for (i of [0, 1, 2, 3, 4]; track i) {
+        <li class="minthmbheiht" *ngIf="previews.length > i">
+          <div #hoverName>
+            <div (click)="selectImage(i)" (mouseover)="onMouseEnter(hoverName)" (mouseleave)="onMouseOut(hoverName)">
+              <img class="cstm-img-center" alt="" [src]="previews[i]" />
+            </div>
+            <div (mouseover)="onEnter(hoverName, hoverButton)" (mouseleave)="onOut(hoverName, hoverButton)">
+              <button #hoverButton class="del-but" (click)="deleteImage(i)">удалить</button>
+            </div>
+          </div>
+        </li>
+        }
+        <li class="minthmbheiht" *ngIf="previews.length < 5">
+          <div>
+            <img class="cstm-img-center" alt="" src="../assets/images/add.png" (click)="trigggerUpload($event)" />
+            <input type="file" accept="image/*" (click)="selectFile($event)" style="display:none" id="fileeInput" name="fileedata" #filee />
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
-  <div *ngIf="lotInfo.auctionTypeId == 2">
-    <p>Минимальная стоимость</p>
-    <input type="number" [(ngModel)]="costStep" />
+  <div class="right-part">
+    <h3 class="title">Основная информация</h3>
+    <div class="input-pair">
+      <div>
+        <h6>Название</h6>
+        <input type="text" [(ngModel)]="lotInfo.name" />
+      </div>
+      <div>
+        <h6>Минимальный рейтинг</h6>
+        <input type="number" />
+      </div>
+    </div>
+    <h6>Время завершения</h6>
+    <div class="input-pair">
+      <div class="label-input">
+        <label class="time-label">Выберите время</label>
+        <input [ngxTimepicker]="fullTime" [format]="24" [(ngModel)]="finishTimeString" readonly>
+        <ngx-material-timepicker #fullTime></ngx-material-timepicker>
+      </div>
+      <mat-form-field>
+        <mat-label>Выберите дату</mat-label>
+        <input matInput [matDatepicker]="final" [value]="finishDate">
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="final"></mat-datepicker-toggle>
+        <mat-datepicker #final></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="input-pair">
+      <div class="mat-input">
+        <h6>Состояние</h6>
+        <mat-form-field>
+          <mat-label>Состояние</mat-label>
+          <mat-select [(ngModel)]="lotInfo.conditionId" name="condition">
+            <mat-option *ngFor="let cond of conditions | keyvalue" [value]="cond.key">{{cond.value}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="mat-input">
+        <h6>Вид аукциона</h6>
+        <mat-form-field>
+          <mat-label>Вид аукциона</mat-label>
+          <mat-select [(ngModel)]="lotInfo.auctionTypeId" name="auctionType">
+            <mat-option *ngFor="let auType of auctionTypes | keyvalue" [value]="auType.key">{{auType.value}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="input-pair">
+      <div>
+        <p>Начальная цена</p>
+        <input type="number" [(ngModel)]="initCost" />
+      </div>
+      <div *ngIf="lotInfo.auctionTypeId == 1">
+        <p>Шаг ставки</p>
+        <input type="number" [(ngModel)]="costStep" />
+      </div>
+      <div *ngIf="lotInfo.auctionTypeId == 2">
+        <p>Минимальная стоимость</p>
+        <input type="number" [(ngModel)]="costStep" />
+      </div>
+    </div>
   </div>
 </div>
 
-<h6>Категории</h6>
-<table>
-  <tr>
-    <th>Название</th>
-    <th>Начало премиума</th>
-    <th>Конец премиума</th>
-    <th>Стоимость</th>
-    <th></th>
-  </tr>
-  @for (cat of lotInfo.categoryInfos; track cat; let index = $index) {
-  <tr>
-    <th>{{cat.categoryName}}</th>
-    <th>{{cat.premiumStart}}</th>
-    <th>{{cat.premiumEnd}}</th>
-    <th>{{payments[index]}}</th>
-    <th>
-      <button (click)="deleteCategory(index)">удалить</button>
-    </th>
-  </tr>
-  }
-</table>
-<div>
-  <mat-form-field>
-    <mat-label>Категория</mat-label>
-    <mat-select [(ngModel)]="selectedCategory" name="auctionType">
-      <mat-option *ngFor="let cat of selectableCategories" [value]="cat.categoryId">{{cat.categoryName}}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <div *ngIf="selectedCategory>=0">
-    <mat-form-field>
-      <mat-label>Период премиума</mat-label>
-      <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-        <input matStartDate formControlName="start" placeholder="Start date" (dateChange)="dateChange()">
-        <input matEndDate formControlName="end" placeholder="End date" (dateChange)="dateChange()">
-      </mat-date-range-input>
-      <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-date-range-picker [dateClass]="dateClass" #picker disabled="false"></mat-date-range-picker>
+<div class="descr-box">
+  <h3 class="title">Описание</h3>
+<textarea cols="100" rows="16" [(ngModel)]="lotInfo.description"></textarea>
+
+  <h3 class="title">Категории</h3>
+  <table class="table">
+    <tr>
+      <th>Название</th>
+      <th>Начало премиума</th>
+      <th>Конец премиума</th>
+      <th>Стоимость</th>
+      <th></th>
+    </tr>
+    @for (cat of lotInfo.categoryInfos; track cat; let index = $index) {
+    <tr>
+      <th>{{cat.categoryName}}</th>
+      <th>{{cat.premiumStart}}</th>
+      <th>{{cat.premiumEnd}}</th>
+      <th>{{payments[index]}}</th>
+      <th>
+        <button class="btn" (click)="deleteCategory(index)">удалить</button>
+      </th>
+    </tr>
+    }
+  </table>
+  <h5>Добавить категорию</h5>
+  <div class="input-pair" style="margin-left: 20px">
+    <mat-form-field class="mat-input">
+      <mat-label>Категория</mat-label>
+      <mat-select [(ngModel)]="selectedCategory" name="auctionType">
+        <mat-option *ngFor="let cat of selectableCategories" [value]="cat.categoryId">{{cat.categoryName}}</mat-option>
+      </mat-select>
     </mat-form-field>
-    <input type="number" [(ngModel)]="premiumPayment" disabled />
-    <button (click)="addCategory()">добавить</button>
+    <div class="input-pair" *ngIf="selectedCategory>=0">
+      <mat-form-field class="mat-input">
+        <mat-label>Дата начала премиума</mat-label>
+        <input matInput [matDatepicker]="start" [value]="startPremDate">
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="start"></mat-datepicker-toggle>
+        <mat-datepicker [dateClass]="dateClass" #start></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="mat-input">
+        <mat-label>Дата окончания премиума</mat-label>
+        <input matInput [matDatepicker]="final" [value]="finishPremDate">
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="final"></mat-datepicker-toggle>
+        <mat-datepicker #final></mat-datepicker>
+      </mat-form-field>
+      <input  style="margin-top: 35px" type="number" [(ngModel)]="premiumPayment" disabled />
+      <button  style="margin-top: 35px" class="btn" (click)="addCategory()">добавить</button>
+    </div>
+  </div>
+
+  <h3 class="title">Способы доставки</h3>
+  <table class="table">
+    <tr>
+      <th>Название</th>
+      <th>Стоимость</th>
+      <th></th>
+    </tr>
+    @for (del of lotInfo.deliveryInfos; track del; let index = $index) {
+    <tr>
+      <th>{{del.countryName}}</th>
+      <th *ngIf="del.size > 0; else UndefSize">{{del.size / 100}}</th>
+      <ng-template #UndefSize>не определена</ng-template>
+      <th>
+        <button class="btn" (click)="deleteDelivery(index)">удалить</button>
+      </th>
+    </tr>
+    }
+  </table>
+  <h5>Добавить способ доставки</h5>
+  <div class="input-pair" style="margin-left: 20px">
+    <mat-form-field class="mat-input">
+      <mat-label>Способ доставки</mat-label>
+      <mat-select [(ngModel)]="selectedDelivery" name="deliveryType">
+        <mat-option *ngFor="let del of selectableDeliveries | keyvalue; " [value]="del.key">{{del.value}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <input class="label-input" style="margin-top: 25px" [(ngModel)]="payment" type="number" />
+    <button class="btn" style="margin-top: 25px" (click)="addDelivery()">добавить</button>
+  </div>
+
+  <h3 class="title">Дополнительные параметры</h3>
+  <table class="table">
+    <tr>
+      <th>Название</th>
+      <th>Значение</th>
+      <th></th>
+    </tr>
+    @for (param of lotInfo.parameters | keyvalue; track param; let index = $index) {
+    <tr>
+      <th>{{param.key}}</th>
+      <th *ngIf="param.value; else UndefValue">{{param.value}}</th>
+      <ng-template #UndefValue>-</ng-template>
+      <th>
+        <button class="btn" (click)="deleteParam(param.key)">удалить</button>
+      </th>
+    </tr>
+    }
+  </table>
+  <h5>Добавить параметр</h5>
+  <div class="input-pair" style="margin-left: 20px">
+    <input type="text" [(ngModel)]="paramKey" />
+    <input type="text" [(ngModel)]="paramValue" />
+    <button class="btn" (click)="addParam()">добавить</button>
+  </div>
+  <div class="btn-save-box">
+    <button class="btn" type="button" (click)="save()">сохранить</button>
   </div>
 </div>
-
-<h6>Способы доставки</h6>
-<table>
-  <tr>
-    <th>Название</th>
-    <th>Стоимость</th>
-    <th></th>
-  </tr>
-  @for (del of lotInfo.deliveryInfos; track del; let index = $index) {
-  <tr>
-    <th>{{del.countryName}}</th>
-    <th *ngIf="del.size > 0; else UndefSize">{{del.size / 100}}</th>
-    <ng-template #UndefSize>не определена</ng-template>
-    <th>
-      <button (click)="deleteDelivery(index)">удалить</button>
-    </th>
-  </tr>
-  }
-</table>
-<div>
-  <mat-form-field>
-    <mat-label>Способ доставки</mat-label>
-    <mat-select [(ngModel)]="selectedDelivery" name="deliveryType">
-      <mat-option *ngFor="let del of selectableDeliveries | keyvalue; " [value]="del.key">{{del.value}}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <input [(ngModel)]="payment" type="number" />
-  <button (click)="addDelivery()">добавить</button>
-</div>
-
-<h6>Дополнительные параметры</h6>
-<table>
-  <tr>
-    <th>Название</th>
-    <th>Значение</th>
-    <th></th>
-  </tr>
-  @for (param of lotInfo.parameters | keyvalue; track param; let index = $index) {
-  <tr>
-    <th>{{param.key}}</th>
-    <th *ngIf="param.value; else UndefValue">{{param.value}}</th>
-    <ng-template #UndefValue>-</ng-template>
-    <th>
-      <button (click)="deleteParam(param.key)">удалить</button>
-    </th>
-  </tr>
-  }
-</table>
-<div>
-  <input type="text" [(ngModel)]="paramKey" />
-  <input type="text" [(ngModel)]="paramValue" />
-  <button (click)="addParam()">добавить</button>
-</div>
-
-<h6>Изображения</h6>
-<image-upload></image-upload>
-
-<button type="button" (click)="save()">сохранить</button>

@@ -7,7 +7,7 @@
 }
 
 .hidden-section .info-section {
-    width: 12%;
+    width: 14%;
     background-color: #252525;
     margin-right: 5%;
 }
@@ -26,7 +26,7 @@
         float: left;
         width: 100%;
         height: 80px;
-        max-width: 100px;
+        max-width: 120px;
         object-fit: contain;
         vertical-align: middle;
         padding: 10px;

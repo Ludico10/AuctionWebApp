@@ -63,7 +63,7 @@ namespace AuctionWebApp.Server.Model.AuctionTypes
             }
 
             var lotAutomatic = await context.TrackableLots
-                .Where(tl => tl.TlLotId == lot.LId && tl.TlUserId != lastBid.BParticipantId && tl.TlMaxAutomaticBid != null)
+                .Where(tl => tl.TlLotId == lot.LId && tl.TlUserId != lastBid.BParticipant.UId && tl.TlMaxAutomaticBid != null)
                 .OrderByDescending(tl => tl.TlMaxAutomaticBid)
                 .ToListAsync();
 

@@ -1,0 +1,18 @@
+<div class="header-back">
+  <header-section [activePage]="3"></header-section>
+</div>
+<div class="page">
+  <div class="list-part">
+    <div *ngFor="let page of mainPages" (click)="selectPage(page.id)" class="list-section" [style.background-color]="(curPage==page.id) ? '#252525' : '#9d2222'">
+      <h3 class="h3">{{page.name}}</h3>
+    </div>
+  </div>
+  <div class="text-part">
+    <div *ngIf="text; else NotFound" [innerHTML]="text"></div>
+    <ng-template #NotFound>
+      <div class="not-found">
+        <h3>Текст страницы не найден</h3>
+      </div>
+    </ng-template>
+  </div>
+</div>

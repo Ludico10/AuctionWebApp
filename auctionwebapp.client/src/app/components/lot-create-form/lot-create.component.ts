@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { DataService } from "../../services/data.service";
 import { LotInfo } from "../../model/lotInfo";
 import { CategoryInfo } from "../../model/categoryInfo";
@@ -8,6 +8,9 @@ import { MatCalendarCellClassFunction, MatMonthView } from "@angular/material/da
 import { PremiumInfo } from "../../model/premiumInfo";
 import { Router } from "@angular/router";
 import { TimeService } from "../../services/time.service";
+import { HttpEventType, HttpResponse } from "@angular/common/http";
+import { FileUploadService } from "../../services/file-upload.service";
+import { Observable } from "rxjs";
 
 @Component({
   selector: 'lot-create',
@@ -16,9 +19,10 @@ import { TimeService } from "../../services/time.service";
     '../../../css/bootstrap.css',
     '../../../css/responsive.css',
     '../../../css/style.css',
-    './lot-create.component.css'
+    './lot-create.component.css',
+    '../lot-detail/lot-detail.component.css'
   ],
-  providers: [DataService, TimeService]
+  providers: [DataService, TimeService, FileUploadService]
 })
 
 export class LotCreateComponent implements OnInit {
@@ -52,17 +56,35 @@ export class LotCreateComponent implements OnInit {
   finishTimeString: string = "";
   finishDate: Date = new Date();
 
+  startPremDate: Date = new Date();
+  finishPremDate: Date = new Date();
+
   range = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
   });
 
-  constructor(private dataService: DataService, private timeService: TimeService, private router: Router)
+  images: Map<number, any> = new Map<number, any>();
+  imageInfos?: Observable<any>;
+
+  selectedFiles?: FileList;
+  currentFile?: File;
+  progress = 0;
+  message = '';
+  previews: Array<string> = new Array<string>();
+  mainId = 0;
+
+  @ViewChild("file") file: ElementRef | undefined;
+  @ViewChild("filee") filee: ElementRef | undefined;
+
+  constructor(private dataService: DataService, private timeService: TimeService, private uploadService: FileUploadService, private router: Router)
   {
     this.data = this.router.getCurrentNavigation()?.extras.state?.['lotInfo'];
   }
 
   ngOnInit() {
+    this.imageInfos = this.uploadService.getFiles();
+
       this.dataService.getCategoriesPremium().subscribe((data: Array<PremiumInfo>) => {
         this.selectableCategories = data;
         this.categories = data;
@@ -121,7 +143,7 @@ export class LotCreateComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.router.getCurrentNavigation();
+    this.router.getCurrentNavigation()?.extras
   }
 
   dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
@@ -143,7 +165,7 @@ export class LotCreateComponent implements OnInit {
         return inside ? 'example-custom-date-class' : '';
       }
     }
-    return '';
+    return 'example-custom-date-class';
   };
 
   dateChange() {
@@ -160,7 +182,7 @@ export class LotCreateComponent implements OnInit {
 
   addParam() {
     if (this.paramKey) {
-      let value = undefined;
+      let value = "";
       if (this.paramValue) value = this.paramValue;
       this.lotInfo.parameters.set(this.paramKey, value);
     }
@@ -225,8 +247,106 @@ export class LotCreateComponent implements OnInit {
       this.lotInfo.finishTime = dateMilli + timeMilli;
     }
 
-    this.dataService.placeLot(this.lotInfo).subscribe(() => {
+    this.dataService.placeLot(this.lotInfo).subscribe((data: LotInfo) => {
+      if (data.id) this.upload(data.id);
       this.router.navigateByUrl("/");
     });
+  }
+
+  selectFile(event: any): void {
+    this.progress = 0;
+    let newFiles = event.target.files;
+    this.selectedFiles = newFiles;
+    if (newFiles) {
+      for (let j = 0; j < newFiles.length && j < 5 - this.selectedFiles!.length; j++) {
+          const file: File | null = newFiles.item(j);
+          if (file) {
+            this.currentFile = file;
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+              console.log(e.target.result);
+              this.previews.push(e.target.result);
+            };
+            reader.readAsDataURL(this.currentFile);
+          }
+      }
+      this.selectedFiles += newFiles;
+    }
+  }
+
+  triggerUpload(event: any) {
+    this.file!.nativeElement.click(); 
+  }
+
+  trigggerUpload(event: any) {
+    this.filee!.nativeElement.click();
+  }
+
+  selectImage(i: number) {
+    this.mainId = i;
+  }
+
+  onMouseEnter(hoverName: HTMLElement) {
+    hoverName.style.border = "1px";
+    hoverName.style.borderStyle = "solid";
+  }
+
+  onMouseOut(hoverName: HTMLElement) {
+    hoverName.style.border = "0px";
+  }
+
+  onEnter(hoverName: HTMLElement, hoverButton: HTMLElement) {
+    this.onMouseEnter(hoverName);
+    hoverButton.style.backgroundColor = "#252525";
+  }
+
+  onOut(hoverName: HTMLElement, hoverButton: HTMLElement) {
+    this.onMouseOut(hoverName);
+    hoverButton.style.backgroundColor = "#9d2222";
+  }
+
+  deleteImage(i: number) {
+    if (i <= this.mainId) this.mainId--;
+    this.previews.splice(i, 1);
+  }
+
+  upload(lotId: number): void {
+    this.progress = 0;
+
+    if (this.selectedFiles) {
+      for (let i = 0; i < this.selectedFiles.length && i < 5; i++) {
+        const file: File | null = this.selectedFiles[i];
+        if (file) {
+          this.currentFile = file;
+          let id = 0;
+          if (i < this.mainId) id = i - 1;
+          if (i > this.mainId) id = i;
+          this.uploadService.upload(this.currentFile, lotId, id).subscribe({
+            next: (event: any) => {
+              if (event.type === HttpEventType.UploadProgress) {
+                this.progress = Math.round((100 * event.loaded) / event.total);
+              } else if (event instanceof HttpResponse) {
+                this.message = event.body.message;
+                this.imageInfos = this.uploadService.getFiles();
+              }
+            },
+            error: (err: any) => {
+              console.log(err);
+              this.progress = 0;
+
+              if (err.error && err.error.message) {
+                this.message = err.error.message;
+              } else {
+                this.message = 'Could not upload the image!';
+              }
+
+              this.currentFile = undefined;
+            },
+          });
+        }
+      }
+
+      this.selectedFiles = undefined;
+    }
   }
 }

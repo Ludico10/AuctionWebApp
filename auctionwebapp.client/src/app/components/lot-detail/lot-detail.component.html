@@ -31,7 +31,7 @@
     <div class="user-box" *ngIf="!isSeller">
       <img *ngIf="sellerAvatar.size !== 0; else NotFound" [src]="sellerAvatar.get(lot!.sellerId)" />
       <ng-template #NotFound>
-        <img src="../assets/images/client-1.png" />
+        <img src="../assets/images/nemo.jpg" />
       </ng-template>
       <div class="info">
         <h3 class="name">{{lot!.sellerName}}</h3>
@@ -65,7 +65,7 @@
     </div>
     <ng-template #SellerOptions>
       <div class="button-conteiner">
-        <button class="buttton" (click)="redirectToEdit()" ng-disabled="!isNew">редактировать</button>
+        <button class="buttton" (click)="redirectToEdit()" *ng-If="!isNew">редактировать</button>
         <button class="buttton" (click)="modalService.open('yes-no')">удалить</button>
       </div>
     </ng-template>
@@ -73,27 +73,44 @@
 </div>
 
 <jw-modal id="modal-1">
-  <h1>Ставка</h1>
-  <p>Размер ставки:</p>
-  <input type="number" [(ngModel)]="bid.size" />
-  <div *ngIf="lot!.auctionTypeId==1">
-    <p>Повышать автоматически до:</p>
-    <input type="number" [(ngModel)]="bid.maxSize" />
-  </div>
-  <div>
-    <button (click)="placeBid()">отправить</button>
-    <button (click)="modalService.close();">назад</button>
+  <div class="wrapper">
+    <div class="combined-login-box">
+      <h2 class="combined-login-box-head">Ставка</h2>
+      <div class="combined-login-row">
+        <label>Размер ставки</label>
+        <div class="combined-login-col">
+          <input class="combined-input" type="number" [(ngModel)]="size" />
+        </div>
+      </div>
+      <div class="combined-login-row" *ngIf="lot!.auctionTypeId==1">
+        <label>Отложенная ставка (повышать автоматически до)</label>
+        <div class="combined-login-col">
+          <input class="combined-input" type="number" [(ngModel)]="maxSize" />
+        </div>
+      </div>
+      <div class="combined-box">
+        <button class="combined-login-btn" style="margin-right: 10%" (click)="placeBid()">отправить</button>
+        <button class="combined-login-btn" style="margin-right: 5%" (click)="modalService.close();">назад</button>
+      </div>
+    </div>
   </div>
 </jw-modal>
 
 <jw-modal id="yes-no">
-  <h1>Удалить лот?</h1>
-  <div>
-    <button (click)="delete()">ок</button>
-    <button (click)="modalService.close();">отмена</button>
+  <div class="wrapper">
+    <div class="combined-login-box">
+      <h2 class="combined-login-box-head">Удалить лот?</h2>
+      <div class="combined-ref" style="margin-bottom: 5px">Это действие приведет к отмене аукциона</div>
+      <div class="combined-ref"> и потере рейтинга</div>
+      <div class="combined-box">
+        <button class="combined-login-btn" style="margin-right: 10%" (click)="delete()">ок</button>
+        <button class="combined-login-btn" style="margin-right: 5%" (click)="modalService.close();">отмена</button>
+      </div>
+    </div>
   </div>
 </jw-modal>
 
+<div class="descr-box">
 <div class="margin-section">
   <h1 class="title">Описание</h1>
   {{lot!.description}}
@@ -160,4 +177,5 @@
       Отправить
     </button>
   </div>
+</div>
 </div>

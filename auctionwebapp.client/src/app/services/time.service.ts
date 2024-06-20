@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { DataService } from "./data.service";
+import { Data } from "@angular/router";
 
 @Injectable()
 export class TimeService {
@@ -60,5 +61,16 @@ export class TimeService {
     if (mins < 10) result += "0";
     result += mins.toString();
     return result;
+  }
+
+  dateToString(date: Date): string {
+    let result = date.toString();
+    result = result.replace('M', ' ');
+    result = result.replace('T', ' ');
+    result = result.replace('W', ' ');
+    result = result.replace('F', ' ');
+    result = result.replace('S', ' ');
+    let items = result.split('.');
+    return items[0];
   }
 }

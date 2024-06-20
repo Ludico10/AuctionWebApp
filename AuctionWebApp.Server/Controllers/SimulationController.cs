@@ -44,7 +44,7 @@ namespace AuctionWebApp.Server.Controllers
                 Bids = bids,
                 ResultCost = await auctionService.CloseAuction(lot)
             };
-            simulationService.DetermineWinner(result);
+            simulationService.DetermineWinner(result, simulationInfo.AuctionTypeId);
             return Json(result);
         }
     }

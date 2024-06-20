@@ -10,17 +10,20 @@
 
       <div *ngIf="navPanel" class="collapse navbar-collapse">
         <ul class="navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href="">Главная<span class="sr-only">(current)</span></a>
+          <li class="nav-item" [ngClass]="{active: activePage==0}">
+            <a class="nav-link" href="/">Главная<span class="sr-only">(current)</span></a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" [ngClass]="{active: activePage==1}">
             <a class="nav-link" href="catalog">Каталог</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" [ngClass]="{active: activePage==2}">
             <a class="nav-link" href="simulation">Симуляция</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">О нас</a>
+          <li class="nav-item" [ngClass]="{active: activePage==3}">
+            <a class="nav-link" href="info">О нас</a>
+          </li>
+          <li *ngIf="userShort" class="nav-item" [ngClass]="{active: activePage==4}">
+            <a class="nav-link" href="create">Выставить лот</a>
           </li>
         </ul>
         <div class="user_option">
@@ -65,7 +68,7 @@
         <div class="image-part">
           <img *ngIf="imgFound; else AvaNotFound" [src]="userImg" />
           <ng-template #AvaNotFound>
-            <img src="../assets/images/client-1.png" />
+            <img src="../assets/images/nemo.jpg" />
           </ng-template>
         </div>
         <div class="info-part">
@@ -82,8 +85,12 @@
           </div>
         </div>
       </div>
-      <a href="">Смотреть профиль</a>
-      <a href="">Связанные лоты</a>
+      <a href="" [style.color]="(activePage==5) ? '#9d2222' : 'white'">
+        Смотреть профиль
+      </a>
+      <a href="lists" [style.color]="(activePage==6) ? '#9d2222' : 'white'">
+        Связанные лоты
+      </a>
     </div>
   </div>
 </header>

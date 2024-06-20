@@ -18,9 +18,15 @@ namespace AuctionWebApp.Server.Services
                 return null;
             }
 
+            var role = await context.Roles.FirstOrDefaultAsync(r => r.RId == user.URoleId);
+            if (role is null)
+            {
+                return null;
+            }
+
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Role, user.URole.RName),
+                new(ClaimTypes.Role, role.RName),
                 new(ClaimTypes.Name, info.Email),
                 new(ClaimTypes.NameIdentifier, user.UId.ToString())
             };

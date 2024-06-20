@@ -2,12 +2,13 @@
   position: relative;
   text-align: center;
   background-color: #e4e5e9;
-  padding: 75px 35px 10px 35px;
+  padding: 7px 35px 10px 35px;
   margin: 30px 10px 0 10px;
   width: 350px;
   -webkit-box-flex: 0;
   -ms-flex: 0 0 23.24670%;
   flex: 0 0 23.24670%;
+  margin-bottom: 10px;
 }
 
   .box h6 {
@@ -22,17 +23,40 @@
       color: #9D2222;
     }
 
-  .box .new {
+  .box .local-header {
     position: absolute;
     top: 0;
     left: 0;
     padding: 5px 35px;
-    background-color: #252525;
-    color: #ffffff;
+    height: 42px;
+    width: 350px;
+    display: flex;
   }
 
-    .box .new h6 {
-      margin: 0;
+    .box .local-header .new {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 5px 35px;
+      background-color: #252525;
+      width: 35%;
+      height: 100%;
+    }
+
+      .box .local-header .new h5 {
+        margin: 0;
+        color: white;
+      }
+
+      .box .local-header .complaint {
+          height: 42px;
+          width: 42px;
+          margin-left: 80%;
+      }
+
+    .box .local-header .complaint img{
+        height: 100%;
+        width: 100%;
     }
 
   .box .img-box {

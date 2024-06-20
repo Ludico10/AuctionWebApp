@@ -14,5 +14,11 @@ namespace AuctionWebApp.Server.Data.Dto
             Size = bid.BSize;
             Time = bid.BTime;
         }
+
+        public BidShortInfo(LotShortInfo lotInfo)
+        {
+            LotInfo = lotInfo;
+            Time = DateTime.Now;
+        }
     }
 }

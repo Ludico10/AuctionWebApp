@@ -16,7 +16,7 @@ export class LotInfo {
     public conditionName: string = "",
     public initialCost: number = 1,
     public costStep: number =  1,
-    public parameters: Map<string, string | undefined> = new Map(),
+    public parameters: Map<string, string> = new Map(),
     public deliveryInfos: Array<DeliveryInfo> = new Array(),
     public categoryInfos: Array<CategoryInfo> = new Array()
   ) { }

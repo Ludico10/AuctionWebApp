@@ -29,7 +29,7 @@ namespace AuctionWebApp.Server.Controllers
         [HttpPost("registrate")]
         public async Task<IActionResult> RegistrateAsync([FromBody] RegistrationInfo registrationInfo)
         {
-            if (!ModelState.IsValid || await userService.Registration(registrationInfo))
+            if (!ModelState.IsValid || !await userService.Registration(registrationInfo))
             {
                 return BadRequest();
             }

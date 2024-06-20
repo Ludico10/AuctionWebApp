@@ -1,0 +1,67 @@
+.header-back {
+    background-color: #252525;
+}
+
+.title-box {
+    background-color: #9d2222;
+    height: 70px;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+}
+
+.title-box h2 {
+    color: white;
+}
+
+.panel-box {
+    display: flex;
+    height: 30px;
+}
+
+    .panel-box .role-option {
+        width: 50%;
+        border: 2px solid;
+        border-color: #252525;
+        background-color: #9d2222;
+        color: white;
+        justify-content: center;
+        text-align: center;
+        padding-top: 2px;
+    }
+
+    .panel-box .list-option {
+        width: 33.333%;
+        border: 2px solid;
+        border-color: #252525;
+        background-color: #9d2222;
+        color: white;
+        justify-content: center;
+        text-align: center;
+        padding-top: 2px;
+    }
+
+.list-box {
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.text-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+  .text-box h6 {
+    color: #252525;
+    font-size: 18px;
+  }
+
+.paginator {
+    background-color: #9D2525;
+}

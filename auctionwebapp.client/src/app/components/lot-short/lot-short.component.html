@@ -1,7 +1,12 @@
 <div class="box">
-  <a href="/lot?id={{info.lotId}}">
-    <div class="new" *ngIf="info.actual">
-      <h5>New</h5>
+  <div (click)="allClick()">
+    <div class="local-header">
+      <div class="new" *ngIf="info.actual">
+        <h5>New</h5>
+      </div>
+      <div *ngIf="forFinnished" class="complaint" (click)="modalClick($event)">
+        <img src="../../../assets/images/complaint.png" />
+      </div>
     </div>
     <div class="img-box">
       <div></div>
@@ -14,9 +19,45 @@
     <div class="detail-box">
       <h5>{{info.name}}</h5>
       <h6 class="price">
-        {{info.currentCost}}$
+        {{info.currentCost / 100}} BYN
       </h6>
       <h6>{{info.auctionTypeName}}</h6>
+      <div *ngIf="size && time; else NotBid">
+        <h5>Моя ставка</h5>
+        <h6 class="price">{{size!/100}} BYN</h6>
+        <h6>{{timeStr}}</h6>
+      </div>
+      <ng-template #NotBid>
+        <div *ngIf="forTrack">
+          <h6 *ngIf="autoBid">
+            Поднимать до {{autoBid!/100}} BYN
+          </h6>
+        </div>
+      </ng-template>
     </div>
-  </a>
+  </div>
 </div>
+<jw-modal id="modal-1">
+  <div class="wrapper">
+    <div class="combined-login-box">
+      <h2 class="combined-login-box-head">Жалоба</h2>
+      <div class="mat-input" style="width: 100%">
+        <h6>Причина</h6>
+        <mat-form-field style="width: 420px">
+          <mat-label>Выберите причину</mat-label>
+          <mat-select [(ngModel)]="complaint.reasonId" name="reason">
+            <mat-option *ngFor="let reason of reasons! | keyvalue" [value]="reason.key">{{reason.value}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div>
+        <h6>Комментарий</h6>
+        <textarea cols="50" rows="4" [(ngModel)]="complaint.comment"></textarea>
+      </div>
+      <div class="combined-box" style="margin-top: 15px">
+        <button class="combined-login-btn" style="margin-right: 10%" (click)="sendComplaint()">отправить</button>
+        <button class="combined-login-btn" style="margin-right: 5%" (click)="modalService.close();">отмена</button>
+      </div>
+    </div>
+  </div>
+</jw-modal>

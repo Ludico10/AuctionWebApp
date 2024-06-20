@@ -16,7 +16,8 @@ import { TimeService } from '../../services/time.service';
     '../../../css/bootstrap.css',
     '../../../css/responsive.css',
     '../../../css/style.css',
-    './lot-detail.component.css'
+    './lot-detail.component.css',
+    '../registration-form/registration-form.component.css'
   ],
   providers: [DataService, TimeService]
 })
@@ -25,6 +26,9 @@ export class LotDetailComponent implements OnInit {
 
   isSeller = false;
   isNew = false;
+
+  size: number = 0;
+  maxSize: number = 0;
 
   time = new Date();
   daysBefore: number = 0;
@@ -38,7 +42,7 @@ export class LotDetailComponent implements OnInit {
   currentCost: number = 1;
   isFavorite: boolean = false;
   comments: Array<CommentInfo> = [];
-  newComment = new CommentInfo(3, this.time);
+  newComment = new CommentInfo(3, 0, this.time);
 
   images: Map<number, any> = new Map<number, any>();
   mainId: number = 0;
@@ -47,6 +51,7 @@ export class LotDetailComponent implements OnInit {
 
   constructor(private dataService: DataService, private timeService: TimeService, protected modalService: ModalService, private router: Router, activeRoute: ActivatedRoute) {
     this.bid.lotId = Number.parseInt(activeRoute.snapshot.queryParams["id"]);
+    this.newComment.lotId = this.bid.lotId;
     let uidStr = localStorage.getItem('uid');
     if (uidStr) {
       this.bid.userId = Number.parseInt(uidStr);
@@ -86,6 +91,21 @@ export class LotDetailComponent implements OnInit {
         this.currentCost = data;
         this.isNew = (this.currentCost == this.lot?.initialCost);
       });
+      this.loadCommetns();
+      this.dataService.getFavorite(this.bid.lotId!, this.bid.userId!).subscribe((data: boolean) => this.isFavorite = data);
+      for (let i = 0; i < 5; i++) {
+        this.dataService.getImage(this.bid.lotId + "-" + i, "actual").subscribe({
+          next: (data: any) => {
+            this.createImageFromBlob(this.images, i, data);
+          },
+          error: () => { }
+        });
+      }
+    }
+  }
+
+  loadCommetns() {
+    if (this.bid.lotId) {
       this.dataService.getLotComments(this.bid.lotId).subscribe((data: any) => {
         this.comments = data as typeof this.comments;
         this.comments.forEach(com => {
@@ -97,15 +117,6 @@ export class LotDetailComponent implements OnInit {
           });
         });
       });
-      this.dataService.getFavorite(this.bid.lotId!, this.bid.userId!).subscribe((data: boolean) => this.isFavorite = data);
-      for (let i = 0; i < 5; i++) {
-        this.dataService.getImage(this.bid.lotId + "-" + i, "actual").subscribe({
-          next: (data: any) => {
-            this.createImageFromBlob(this.images, i, data);
-          },
-          error: () => { }
-        });
-      }
     }
   }
 
@@ -153,14 +164,18 @@ export class LotDetailComponent implements OnInit {
     if (this.bid.maxSize) {
       this.bid.maxSize = Math.floor(this.bid.maxSize * 100);
     }
-    this.dataService.placeBid(this.bid.lotId!, this.bid).subscribe();
-    this.modalService.close();
+    this.dataService.placeBid(this.bid.lotId!, this.bid).subscribe(() => {
+      this.modalService.close();
+      this.dataService.getCurrentCost(this.bid.lotId!).subscribe((data: number) => this.currentCost = data);
+    });
   }
 
   placeComment() {
     if (this.newComment.text) {
       this.newComment.time = this.time;
-      this.dataService.placeComment(this.newComment, this.bid.lotId!).subscribe();
+      this.dataService.placeComment(this.newComment, this.bid.lotId!).subscribe(() => {
+        this.loadCommetns();
+      });
     }
   }
 
